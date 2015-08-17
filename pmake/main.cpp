@@ -3,6 +3,7 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <unordered_map>
+#include <stdexcept>
 #include "pmake_options.h"
 using namespace std;
 
@@ -85,7 +86,7 @@ int main(int argc, char* argv[])
         };
         int option_index = 0;
 
-        int c = getopt_long(argc, argv, "bmBdC:fj::nqvW:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "bmBdC:fj:nqvW:", long_options, &option_index);
         if (c == -1)
             break;
         switch (c)
@@ -103,10 +104,10 @@ int main(int argc, char* argv[])
             // ignored arguments
             break;
         case 'B':
-            options.set_always_make()
+            options.set_always_make();
             break;
         case 'd':
-            options.set_verbose()
+            options.set_verbose();
             break;
         case 'C':
             options.set_dirs(optarg);
@@ -117,8 +118,8 @@ int main(int argc, char* argv[])
         case 'j':
             try
             {
+                cout << "Trying to set jobs" << endl;
                 options.set_jobs(stoi(optarg));
-                break;
             }
             catch (const invalid_argument&)
             {
@@ -128,6 +129,7 @@ int main(int argc, char* argv[])
             {
                 cerr << "jobs value must be valid positive integer" << endl;
             }
+            break;
 
         case 'n':
             options.set_just_print();
@@ -145,17 +147,13 @@ int main(int argc, char* argv[])
         case 'h':
             print_help(exe_name);
             return EXIT_SUCCESS;
-
         case '?':
-            /* getopt_long already printed an error message. */
+            // getopt_long already printed an error message.
             break;
-
-        default:
-            printf("?? getopt returned character code 0%o ??\n", c);
-        }
     }
 
     if (optind < argc)
         while (optind < argc)
-            options.set_target(argv[optind++])
+            options.set_targets(argv[optind++]);
+
 }
