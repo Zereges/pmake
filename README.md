@@ -23,11 +23,9 @@ OPTIONS
     -f file
         Use file as Makefile.
 
-    -j [jobs], --jobs=jobs
-        Specifies the number jobs (commands) to run simultaneously. If -j is
-        given without argument pmake utility will not limit the number of jobs
-        that can run simultaneously. This is implicitely on with jobs=number of
-        cores.
+    -j jobs, --jobs=jobs
+        Specifies the number jobs (commands) to run simultaneously. This is
+        implicitely on with jobs=number of cores.
 
     -n, --just-print, --dry-run, --recon
         Print the commands that would be executed, but do not execute them.
