@@ -18,6 +18,16 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\pmake.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\main.hpp" />
+    <ClInclude Include="src\makefile_record.hpp" />
+    <ClInclude Include="src\pmake.hpp" />
+    <ClInclude Include="src\pmake_options.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{55BF2E24-27CA-47F0-9091-6DFC6C8E9064}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -141,16 +151,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="pmake.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="main.hpp" />
-    <ClInclude Include="pmake.hpp" />
-    <ClInclude Include="makefile_record.hpp" />
-    <ClInclude Include="pmake_options.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

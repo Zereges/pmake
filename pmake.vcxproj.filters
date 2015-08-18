@@ -15,24 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pmake.cpp">
+    <ClCompile Include="src\pmake.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.hpp">
+    <ClInclude Include="src\main.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pmake_options.hpp">
+    <ClInclude Include="src\makefile_record.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="makefile_record.hpp">
+    <ClInclude Include="src\pmake.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pmake.hpp">
+    <ClInclude Include="src\pmake_options.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
