@@ -11,7 +11,7 @@ class pmake
     public:
         using pmake_variables = std::unordered_map<std::string, std::string>;
 
-        explicit pmake(const std::vector<std::string>& makefile);
+        explicit pmake(const std::vector<std::string>& makefile, pmake_options&& options);
 
         void add_variable(const std::string& name, const std::string& value) { m_variables.emplace(name, value); }
         bool is_variable(const std::string& name) { return m_variables.end() != m_variables.find(name); }

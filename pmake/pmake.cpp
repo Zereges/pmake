@@ -3,13 +3,14 @@
 #include <regex>
 #include <iostream>
 #include "pmake.hpp"
+#include "pmake_options.hpp"
 using namespace std;
 
 const regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *([^ ]+.*))");
 const regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
 
 
-pmake::pmake(const std::vector<std::string>& makefile)
+pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) : m_optons(std::move(options))
 {
 
     size_t i;
