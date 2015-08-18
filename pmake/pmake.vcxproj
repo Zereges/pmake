@@ -143,9 +143,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pmake.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pmake_options.h" />
+    <ClInclude Include="main.hpp" />
+    <ClInclude Include="pmake.hpp" />
+    <ClInclude Include="makefile_record.hpp" />
+    <ClInclude Include="pmake_options.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

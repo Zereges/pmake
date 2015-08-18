@@ -20,6 +20,12 @@ class pmake_options
         void set_files(const std::string& file) { m_files.push_back(file); }
         void set_targets(const std::string& target) { m_targets.push_back(target); }
 
+        bool is_alwyas_make() { return m_always_make; }
+        bool is_verbose() { return m_verbose; }
+        bool is_just_print() { return m_just_print; }
+        bool is_question() { return m_question; }
+        bool is_warn_undefined() { return m_warn_undefined; }
+
     private:
         bool m_always_make;
         bool m_verbose;
