@@ -4,61 +4,9 @@
 #include <stdio.h>
 #include <unordered_map>
 #include <stdexcept>
-#include "pmake_options.h"
+#include "pmake_options.hpp"
+#include "main.hpp"
 using namespace std;
-
-void print_version()
-{
-    cout << "1.0, Filip Kliber <zereges@gmail.com>";
-}
-
-void print_help(const string& exe_name)
-{
-    cout << "Usage: " << exe_name << " [options] [target] ..." << endl <<
-        R"--(Options:
-    -b, -m
-        These options are ignored for compatibility with other versions of make.
-
-    -B, --always-make
-        Unconfitionally make all targets.
-
-    -d, --verbose
-        Print debugging information about what is going on.
-
-    -C dir, --directory=dir
-        Change to directory dir before doing anything, Sunsequent uses of this
-        argument will be relative to previous one.
-
-    -f file
-        Use file as Makefile.
-
-    -j jobs, --jobs=jobs
-        Specifies the number jobs (commands) to run simultaneously. This is
-        implicitely on with jobs=number of cores.
-
-    -n, --just-print, --dry-run, --recon
-        Print the commands that would be executed, but do not execute them.
-
-    -q, --question
-        "Question mode". Do not run any commands, or print anything; just return
-        an exit status that is zero if the specified targets are already up
-        to date, nonzero otherwise.
-
-    -v, --version
-        Print a message containing version and author. After the message is
-        printed, pmake will exit.
-
-    -W file, --what-if=file, --new-file=file, --assume-new=file
-        Pretend that the target file has just been  modified. It is almost the
-        same as running a touch command on the given file before running make,
-        except that the modification time is changed only in the imagination of
-        make.
-
-    --warn-undefined-variables
-        Warn when an undefined variable is referenced.)--" << endl << endl;
-
-        print_version();
-}
 
 int main(int argc, char* argv[])
 {
@@ -116,21 +64,15 @@ int main(int argc, char* argv[])
             options.set_make_file(optarg);
             break;
         case 'j':
-            try
-            {
-                cout << "Trying to set jobs" << endl;
-                options.set_jobs(stoi(optarg));
-            }
-            catch (const invalid_argument&)
+            int jobs = to_number(optarg);
+            if (jobs > 0)
+                options.set_jobs(jobs);
+            else
             {
                 cerr << "jobs value must be valid positive integer" << endl;
-            }
-            catch (const out_of_range&)
-            {
-                cerr << "jobs value must be valid positive integer" << endl;
+                return CODE_FAILURE;
             }
             break;
-
         case 'n':
             options.set_just_print();
             break;
@@ -139,21 +81,22 @@ int main(int argc, char* argv[])
             break;
         case 'W':
             options.set_files(optarg);
+            cout << optarg << endl;
             break;
 
         case 'v':
             print_version();
-            return EXIT_SUCCESS;
+            return CODE_SUCCESS;
         case 'h':
             print_help(exe_name);
-            return EXIT_SUCCESS;
+            return CODE_SUCCESS;
         case '?':
             // getopt_long already printed an error message.
             break;
+        }
     }
 
     if (optind < argc)
         while (optind < argc)
             options.set_targets(argv[optind++]);
-
 }
