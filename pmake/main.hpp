@@ -65,7 +65,7 @@ void print_help(const std::string& exe_name)
 
 int to_number(const std::string& str)
 {
-    if (std::all_of(str.begin(), str.end(), [](auto c) { return (c >= '0' && c <= '9'); }))
+    if (std::all_of(str.begin(), str.end(), [](decltype(*str.begin()) c) { return (c >= '0' && c <= '9'); }))
         return std::stoi(str);
     else
         return 0;

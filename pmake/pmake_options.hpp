@@ -5,8 +5,9 @@
 class pmake_options
 {
     public:
-        pmake_options() : m_always_make(false), m_verbose(false), m_make_file("Makefile"), m_jobs(std::thread::hardware_concurrency()),
-            m_just_print(false), m_question(false), m_warn_undefined(false) { }
+        pmake_options() : m_always_make(false), m_verbose(false), m_just_print(false), m_question(false),
+            m_warn_undefined(false), m_jobs(std::thread::hardware_concurrency()), m_make_file("Makefile")
+        { }
 
         void set_always_make() { m_always_make = true; }
         void set_verbose() { m_verbose = true; }

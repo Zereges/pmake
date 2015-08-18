@@ -1,9 +1,10 @@
 #include <string>
 #include <iostream>
-#include <getopt.h>
-#include <stdio.h>
 #include <unordered_map>
 #include <stdexcept>
+#include <cstdio>
+#include <cstring>
+#include <getopt.h>
 #include "pmake_options.hpp"
 #include "main.hpp"
 using namespace std;
@@ -34,7 +35,7 @@ int main(int argc, char* argv[])
         };
         int option_index = 0;
 
-        int c = getopt_long(argc, argv, "bmBdC:fj:nqvW:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "bmBdC:f:j:nqvW:", long_options, &option_index);
         if (c == -1)
             break;
         switch (c)
@@ -42,7 +43,7 @@ int main(int argc, char* argv[])
         case 0:
             if (long_options[option_index].flag == 0)
             {
-                if (long_options[option_index].name == "warn-undefined-variables")
+                if (!strcmp(long_options[option_index].name, "warn-undefined-variables"))
                     options.set_warn_undefined();
             }
             break;
@@ -64,6 +65,7 @@ int main(int argc, char* argv[])
             options.set_make_file(optarg);
             break;
         case 'j':
+        {
             int jobs = to_number(optarg);
             if (jobs > 0)
                 options.set_jobs(jobs);
@@ -73,6 +75,7 @@ int main(int argc, char* argv[])
                 return CODE_FAILURE;
             }
             break;
+        }
         case 'n':
             options.set_just_print();
             break;
@@ -81,7 +84,6 @@ int main(int argc, char* argv[])
             break;
         case 'W':
             options.set_files(optarg);
-            cout << optarg << endl;
             break;
 
         case 'v':
