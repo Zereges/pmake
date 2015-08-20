@@ -133,9 +133,10 @@ int main(int argc, char* argv[])
     if (prev != "")
         cerr << "Unexpected end of file" << endl;
 
+    pmake make;
     try
     {
-        pmake make(makefile, move(options));
+        make = pmake(makefile, move(options));
     }
     catch (invalid_argument&)
     {

@@ -12,6 +12,7 @@ class pmake
         using pmake_variables = std::unordered_map<std::string, std::string>;
         using makefile_records = std::vector<makefile_record>;
 
+        pmake() = default;
         explicit pmake(const std::vector<std::string>& makefile, pmake_options&& options);
 
         void add_variable(const std::string& name, const std::string& value) { m_variables.emplace(name, value); }
