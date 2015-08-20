@@ -21,12 +21,14 @@ class pmake
 
         void add_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies) { m_records.emplace_back(std::move(targets), std::move(dependencies)); }
 
-    private:
+        
         static const std::regex var_def;
         static const std::regex var_use;
         static const std::regex target_def;
         static const std::regex command_def;
+        static const std::regex item_def;
     
+    private:
         pmake_options m_optons;
         pmake_variables m_variables;
         makefile_records m_records;

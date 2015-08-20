@@ -11,6 +11,7 @@ const regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *([^ ]+.*))");
 const regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
 const regex pmake::target_def(R"(([^:]+):(.*))");
 const regex pmake::command_def(R"(^\s*(.+)\s*$)");
+const regex pmake::item_def(R"(^\s*(.+)\s*$)");
 
 vector<string> split(const string& str, char delim)
 {
@@ -18,7 +19,11 @@ vector<string> split(const string& str, char delim)
     stringstream ss(str);
     string item;
     while (getline(ss, item, delim))
-        elems.push_back(item);
+    {
+        smatch sm;
+        if (regex_match(item, sm, pmake::item_def)) // removing empty strings.
+            elems.push_back(sm[1]);
+    }
 
     return move(elems);
 }
