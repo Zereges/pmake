@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
     string line, prev;
     ifstream stream(options.get_makefile());
     vector<string> makefile;
-    while (getline(stream, line))
+    while (getline(stream, line)) // handling lines that ends with a backslash
     {
         if (prev != "")
         {
@@ -133,7 +133,14 @@ int main(int argc, char* argv[])
     if (prev != "")
         cerr << "Unexpected end of file" << endl;
 
-    pmake make(makefile, move(options));
+    try
+    {
+        pmake make(makefile, move(options));
+    }
+    catch (invalid_argument&)
+    {
+        return CODE_FAILURE;
+    }
 
     cout << endl;
 }

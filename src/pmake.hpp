@@ -10,6 +10,7 @@ class pmake
 {
     public:
         using pmake_variables = std::unordered_map<std::string, std::string>;
+        using makefile_records = std::vector<makefile_record>;
 
         explicit pmake(const std::vector<std::string>& makefile, pmake_options&& options);
 
@@ -17,12 +18,17 @@ class pmake
         bool is_variable(const std::string& name) { return m_variables.end() != m_variables.find(name); }
         std::string get_variable(const std::string& name) { return m_variables.at(name); }
 
-    private:
-        pmake_options m_optons;
-        pmake_variables m_variables;
+        void add_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies) { m_records.emplace_back(std::move(targets), std::move(dependencies)); }
 
+    private:
         static const std::regex var_def;
         static const std::regex var_use;
+        static const std::regex target_def;
+        static const std::regex command_def;
+    
+        pmake_options m_optons;
+        pmake_variables m_variables;
+        makefile_records m_records;
 
         std::string replace_occurences(const std::string& input)
         {
