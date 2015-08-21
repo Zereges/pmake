@@ -28,9 +28,28 @@ vector<string> split(const string& str, char delim)
     return move(elems);
 }
 
+string& replace(string& what, const string& find, const string& replace)
+{
+    size_t pos = 0;
+    while ((pos = what.find(find, pos)) != std::string::npos)
+    {
+        what.replace(pos, find.length(), replace);
+        pos += replace.length();
+    }
+    return what;
+}
+
+string& replace(string& what, const string& find, const vector<string>& replaces)
+{
+    string s;
+    for (const string& str : replaces)
+        s += (str + " ");
+    s.pop_back();
+    return replace(what, find, s);
+}
+
 pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) : m_optons(std::move(options))
 {
-    size_t blocks = 0;
     for (size_t i = 0; i < makefile.size(); ++i)
     {
         string str = replace_occurences(makefile[i].substr(0, makefile[i].find('#'))); // remove comments and dereference variables
@@ -45,16 +64,21 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) 
             vector<string> targets = split(sm[1], ' ');
             vector<string> dependencies = split(sm[2], ' ');
             add_record(move(targets), move(dependencies));
-            ++blocks;
         }
         else if (regex_match(str, sm, command_def))
         {
-            if (blocks == 0)
+            if (m_records.size() == 0)
             {
                 cerr << m_optons.get_makefile() << ": recipe commences before first target. Stop." << endl;
                 throw invalid_argument("Can not recover.");
             }
-            m_records[blocks - 1].add_command(sm[1]);
+            string s = sm[1]; // implicit cast
+            makefile_record& record = m_records.back();
+            replace(s, "$@", record.get_target());
+            replace(s, "$^", record.get_dependencies_stripped());
+            replace(s, "$+", record.get_dependencies());
+            replace(s, "$<", record.get_dependencies().front());
+            record.add_command(move(s));
         }
     }
 }

@@ -23,6 +23,9 @@ OPTIONS
     -f file
         Use file as Makefile.
 
+    -h, --help
+        Prints help message.
+
     -j jobs, --jobs=jobs
         Specifies the number jobs (commands) to run simultaneously. This is
         implicitely on with jobs=number of cores.
@@ -33,7 +36,8 @@ OPTIONS
     -q, --question
         "Question mode". Do not run any commands, or print anything; just return
         an exit status that is zero if the specified targets are already up
-        to date, nonzero otherwise.
+        to date, one if targets need to be rebuilt and two is any error
+        is encountered.
 
     -v, --version
         Print a message containing version and author. After the message is
@@ -60,10 +64,10 @@ MAKEFILE SYNTAX
 
     pmake will parse the Makefile from top to the bottom and will save macros
     when it encounters them. One macro can be defined as content of another, but
-     no recurrence will be applied. Undefined macro contains empty string.
+    no recurrence will be applied. Undefined macro contains empty string.
 
     pmake supports usage of special predefined macros. Here is list of them
-    $@      Name of the target
+    $@      Name of the first target
     $?      List of dependencies more recent than the target.
     $^      List of all dependencies without duplicities.
     $+      List of all dependencies in same order as they were specified.
@@ -79,9 +83,9 @@ MAKEFILE SYNTAX
 
 
 EXIT STATUS
-    The pmake utility exitst with status of zero if all makefiles were
+    The pmake utility exits with status of zero if all makefiles were
     successfully parsed and no targets that were built failed. A status of one
-    will be returned if the -q flag was used and  make determines that a target
+    will be returned if the -q flag was used and make determines that a target
     needs to be rebuilt. A status of two will be returned if any errors were
     encountered.
 ```
