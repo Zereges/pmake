@@ -154,5 +154,5 @@ int main(int argc, char* argv[])
         return CODE_FAILURE;
     }
 
-    cout << endl;
+    return make.run(exe_name);
 }

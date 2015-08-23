@@ -3,8 +3,11 @@
 #include <regex>
 #include <iostream>
 #include <sstream>
+#include "main.hpp"
 #include "pmake.hpp"
+#include "makefile_record.hpp"
 #include "pmake_options.hpp"
+#include "file.hpp"
 using namespace std;
 
 const regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *([^ ]+.*))");
@@ -42,7 +45,7 @@ string& replace(string& what, const string& find, const string& replace)
 string& replace(string& what, const string& find, const makefile_record::dependencies& replaces)
 {
     string s;
-    for (const dependency& dep : replaces)
+    for (const file& dep : replaces)
         s += (dep.get_name() + " ");
     if (s.length())
         s.pop_back();
@@ -78,10 +81,17 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) 
             string s = sm[1]; // implicit cast
             makefile_record& record = m_records.back();
             replace(s, "$@", record.get_target());
+            replace(s, "$?", record.get_dependencies_recent());
             replace(s, "$^", record.get_dependencies_stripped());
             replace(s, "$+", record.get_dependencies());
             replace(s, "$<", record.get_dependencies().empty() ? "" : record.get_dependencies().front().get_name());
             record.add_command(move(s));
         }
     }
+}
+
+int pmake::run(const std::string& exe_name)
+{
+
+    return CODE_SUCCESS;
 }

@@ -1,11 +1,13 @@
 #pragma once
 #include <vector>
 #include <thread>
+#include "file.hpp"
 
 class pmake_options
 {
     public:
         using records = std::vector<std::string>;
+        using targets = std::vector<file>; // problems with makefile_record::targets
 
         pmake_options() : m_always_make(false), m_verbose(false), m_just_print(false), m_question(false),
             m_warn_undefined(false), m_jobs(std::thread::hardware_concurrency()), m_makefile("Makefile")
@@ -19,7 +21,7 @@ class pmake_options
         void set_jobs(unsigned jobs) { m_jobs = jobs; }
         void set_make_file(const std::string& makefile) { m_makefile = makefile; }
         void set_files(const std::string& file) { m_files.push_back(file); }
-        void set_targets(const std::string& target) { m_targets.push_back(target); }
+        void set_targets(std::string&& target) { m_targets.emplace_back(std::move(target)); }
 
         bool is_alwyas_make() const { return m_always_make; }
         bool is_verbose() const { return m_verbose; }
@@ -30,7 +32,7 @@ class pmake_options
         unsigned get_jobs() const { return m_jobs; }
         const std::string& get_makefile() const { return m_makefile; }
         const records& get_files() const { return m_files; }
-        const records& get_targets() const { return m_targets; }
+        const targets& get_targets() const { return m_targets; }
 
     private:
         bool m_always_make;
@@ -41,5 +43,5 @@ class pmake_options
         unsigned m_jobs;
         std::string m_makefile;
         records m_files;
-        records m_targets;
+        targets m_targets;
 };

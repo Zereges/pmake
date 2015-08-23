@@ -10,12 +10,12 @@ enum
     CODE_FAILURE = 2,
 };
 
-void print_version()
+inline void print_version()
 {
     std::cout << "1.0, Filip Kliber <zereges@gmail.com>" << std::endl;
 }
 
-void print_help(const std::string& exe_name)
+inline void print_help(const std::string& exe_name)
 {
     std::cout << "Usage: " << exe_name << " [options] [target] ..." << std::endl <<
         R"--(Options:
@@ -63,7 +63,7 @@ void print_help(const std::string& exe_name)
     print_version();
 }
 
-int to_number(const std::string& str)
+inline int to_number(const std::string& str)
 {
     if (std::all_of(str.begin(), str.end(), [](decltype(*str.begin()) c) { return (c >= '0' && c <= '9'); }))
         return std::stoi(str);

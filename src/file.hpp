@@ -15,6 +15,8 @@ class file
 
         time_t get_time() const { return m_time; }
         const std::string& get_name() const { return m_name; }
+
+        bool is_recent(const file& f) const { return get_time() > f.get_time(); }
         
         friend bool operator<(const file& t1, const file& t2) { return t1.m_name < t2.m_name; }
         friend bool operator>(const file& t1, const file& t2) { return t1.m_name > t2.m_name; }

@@ -23,6 +23,8 @@ class pmake
         {
             m_records.emplace_back(std::move(targets), std::move(dependencies), options);
         }
+
+        int run(const std::string&);
         
         static const std::regex var_def;
         static const std::regex var_use;
