@@ -8,7 +8,7 @@ class dependency
         dependency(std::string&& name, time_t t = 0) : m_name(move(name)), m_time(t)
         {
             struct stat buf;
-            if (time == 0 && !stat(m_name.c_str(), &buf))
+            if (m_time == 0 && !stat(m_name.c_str(), &buf))
                 m_time = buf.st_mtime;
 
         }
