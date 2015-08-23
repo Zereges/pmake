@@ -11,17 +11,18 @@ OPTIONS
         These options are ignored for compatibility with other versions of make.
 
     -B, --always-make
-        Unconfitionally make all targets.
+        Unconditionally make all targets.
 
     -d, --verbose
         Print debugging information about what is going on.
 
     -C dir, --directory=dir
-        Change to directory dir before doing anything, Sunsequent uses of this
+        Change to directory dir before doing anything, Subsequent uses of this
         argument will be relative to previous one.
 
     -f file
-        Use file as Makefile.
+        Use file as Makefile. If used multiple times, only last one will be
+        active.
 
     -h, --help
         Prints help message.

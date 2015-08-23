@@ -6,6 +6,8 @@
 #include <cstdio>
 #include <cstring>
 #include <getopt.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include "pmake.hpp"
 #include "pmake_options.hpp"
 #include "main.hpp"
@@ -61,11 +63,21 @@ int main(int argc, char* argv[])
             options.set_verbose();
             break;
         case 'C':
-            options.set_dirs(optarg);
+            if (chdir(optarg))
+            {
+                cerr << exe_name << ": " << optarg << ": No such file or directory. Stop." << endl;
+                return CODE_FAILURE;
+            }
             break;
         case 'f':
-            options.set_make_file(optarg);
+        {
+            struct stat buf;
+            if (stat(optarg, &buf))
+                options.set_make_file(optarg);
+            else
+                cerr << exe_name << ": " << optarg << ": no such file. Ignoring." << endl;
             break;
+        }
         case 'j':
         {
             int jobs = to_number(optarg);
@@ -73,7 +85,7 @@ int main(int argc, char* argv[])
                 options.set_jobs(jobs);
             else
             {
-                cerr << "jobs value must be valid positive integer" << endl;
+                cerr << exe_name << ": the '-j' option requires a positive integer argument." << endl;
                 return CODE_FAILURE;
             }
             break;
@@ -103,7 +115,6 @@ int main(int argc, char* argv[])
     if (optind < argc)
         while (optind < argc)
             options.set_targets(argv[optind++]);
-
 
     string line, prev;
     ifstream stream(options.get_makefile());

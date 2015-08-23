@@ -19,8 +19,10 @@ class pmake
         bool is_variable(const std::string& name) const { return m_variables.end() != m_variables.find(name); }
         const std::string& get_variable(const std::string& name) const { return m_variables.at(name); }
 
-        void add_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies) { m_records.emplace_back(std::move(targets), std::move(dependencies)); }
-
+        void add_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options)
+        {
+            m_records.emplace_back(std::move(targets), std::move(dependencies), options);
+        }
         
         static const std::regex var_def;
         static const std::regex var_use;
@@ -29,7 +31,7 @@ class pmake
         static const std::regex item_def;
     
     private:
-        pmake_options m_optons;
+        pmake_options m_options;
         pmake_variables m_variables;
         makefile_records m_records;
 
@@ -41,7 +43,7 @@ class pmake
             {
                 bool is_var = is_variable(use[1]);
                 s = s.replace(use.position(0), use[0].length(), is_var ? get_variable(use[1]) : "");
-                if (!is_var && m_optons.is_warn_undefined())
+                if (!is_var && m_options.is_warn_undefined())
                     std::cout << "Warning: variable " << use[0] << " is undefined. (--warn-undefined-variables)" << std::endl;
                 use = std::smatch();
             }

@@ -39,16 +39,19 @@ string& replace(string& what, const string& find, const string& replace)
     return what;
 }
 
-string& replace(string& what, const string& find, const vector<string>& replaces)
+string& replace(string& what, const string& find, const makefile_record::dependencies& replaces)
 {
     string s;
-    for (const string& str : replaces)
-        s += (str + " ");
-    s.pop_back();
+    for (const dependency& dep : replaces)
+        s += (dep.get_name() + " ");
+    if (s.length())
+        s.pop_back();
     return replace(what, find, s);
 }
 
-pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) : m_optons(std::move(options))
+
+
+pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) : m_options(std::move(options))
 {
     for (size_t i = 0; i < makefile.size(); ++i)
     {
@@ -63,13 +66,13 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) 
         {
             vector<string> targets = split(sm[1], ' ');
             vector<string> dependencies = split(sm[2], ' ');
-            add_record(move(targets), move(dependencies));
+            add_record(move(targets), move(dependencies), m_options);
         }
         else if (regex_match(str, sm, command_def))
         {
             if (m_records.size() == 0)
             {
-                cerr << m_optons.get_makefile() << ": recipe commences before first target. Stop." << endl;
+                cerr << m_options.get_makefile() << ": recipe commences before first target. Stop." << endl;
                 throw invalid_argument("Can not recover.");
             }
             string s = sm[1]; // implicit cast
@@ -77,7 +80,7 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) 
             replace(s, "$@", record.get_target());
             replace(s, "$^", record.get_dependencies_stripped());
             replace(s, "$+", record.get_dependencies());
-            replace(s, "$<", record.get_dependencies().front());
+            replace(s, "$<", record.get_dependencies().empty() ? "" : record.get_dependencies().front().get_name());
             record.add_command(move(s));
         }
     }
