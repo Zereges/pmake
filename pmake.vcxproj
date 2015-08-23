@@ -23,7 +23,7 @@
     <ClCompile Include="src\pmake.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\dependency.hpp" />
+    <ClInclude Include="src\file.hpp" />
     <ClInclude Include="src\main.hpp" />
     <ClInclude Include="src\makefile_record.hpp" />
     <ClInclude Include="src\pmake.hpp" />

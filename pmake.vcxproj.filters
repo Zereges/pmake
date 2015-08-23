@@ -35,7 +35,7 @@
     <ClInclude Include="src\pmake_options.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\dependency.hpp">
+    <ClInclude Include="src\file.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

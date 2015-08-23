@@ -79,7 +79,7 @@ MAKEFILE SYNTAX
     %.o: %.cpp
         echo $*
     rule suits any target ending with %.o and having same dependency with
-    different suffix. Invoking `make test.o` while having `test.cpp` in give
+    different suffix. Invoking `make test.o` while having `test.cpp` in given
     directory will print `test` to stdout.
 
 
