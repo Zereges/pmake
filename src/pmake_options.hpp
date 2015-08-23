@@ -34,6 +34,8 @@ class pmake_options
         const records& get_files() const { return m_files; }
         const targets& get_targets() const { return m_targets; }
 
+        void set_default_target(const file& target) { m_targets.push_back(target); }
+
     private:
         bool m_always_make;
         bool m_verbose;

@@ -2,6 +2,8 @@
 #include <string>
 #include <sys/stat.h>
 #include <vector>
+#include <algorithm>
+#include "pmake.hpp"
 
 class file
 {

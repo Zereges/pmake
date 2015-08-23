@@ -8,9 +8,9 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include "main.hpp"
 #include "pmake.hpp"
 #include "pmake_options.hpp"
-#include "main.hpp"
 using namespace std;
 
 int main(int argc, char* argv[])

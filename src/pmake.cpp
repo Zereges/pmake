@@ -52,8 +52,6 @@ string& replace(string& what, const string& find, const makefile_record::depende
     return replace(what, find, s);
 }
 
-
-
 pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) : m_options(std::move(options))
 {
     for (size_t i = 0; i < makefile.size(); ++i)
@@ -80,7 +78,7 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) 
             }
             string s = sm[1]; // implicit cast
             makefile_record& record = m_records.back();
-            replace(s, "$@", record.get_target());
+            replace(s, "$@", record.get_target().get_name());
             replace(s, "$?", record.get_dependencies_recent());
             replace(s, "$^", record.get_dependencies_stripped());
             replace(s, "$+", record.get_dependencies());
@@ -92,6 +90,13 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) 
 
 int pmake::run(const std::string& exe_name)
 {
+    if (!m_records.size())
+    {
+        cerr << exe_name << ": No targets. Stop." << endl;
+        return CODE_FAILURE;
+    }
+    if (!m_options.get_targets().size())
+        m_options.set_default_target(m_records.front().get_target());
 
     return CODE_SUCCESS;
 }

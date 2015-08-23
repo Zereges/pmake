@@ -38,5 +38,8 @@
     <ClInclude Include="src\file.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\makefile_records.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

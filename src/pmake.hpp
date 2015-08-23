@@ -4,13 +4,13 @@
 #include <unordered_map>
 #include <regex>
 #include "pmake_options.hpp"
+#include "makefile_records.hpp"
 #include "makefile_record.hpp"
 
 class pmake
 {
     public:
         using pmake_variables = std::unordered_map<std::string, std::string>;
-        using makefile_records = std::vector<makefile_record>;
 
         pmake() = default;
         explicit pmake(const std::vector<std::string>& makefile, pmake_options&& options);

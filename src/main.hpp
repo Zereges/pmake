@@ -6,7 +6,7 @@
 enum
 {
     CODE_SUCCESS = 0,
-    CODE_QUESTION_SUCCESS = 1,
+    CODE_QUESTION_FAILURE = 1,
     CODE_FAILURE = 2,
 };
 

@@ -26,6 +26,7 @@
     <ClInclude Include="src\file.hpp" />
     <ClInclude Include="src\main.hpp" />
     <ClInclude Include="src\makefile_record.hpp" />
+    <ClInclude Include="src\makefile_records.hpp" />
     <ClInclude Include="src\pmake.hpp" />
     <ClInclude Include="src\pmake_options.hpp" />
   </ItemGroup>
