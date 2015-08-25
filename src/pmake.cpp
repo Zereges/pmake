@@ -52,7 +52,46 @@ string& replace(string& what, const string& find, const makefile_record::depende
     return replace(what, find, s);
 }
 
-pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) : m_options(std::move(options))
+pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) : m_options(std::move(options)),
+    m_variables // some of built-in variables according to GNU make man page.
+    {
+        { "AR", "ar" },
+        { "AS", "as" },
+        { "CC", "cc" },
+        { "CXX", "g++" },
+        { "CPP", "cc -E" },
+        { "FC", "f77" },
+        { "M2C", "m2c" },
+        { "PC", "pc" },
+        { "CO", "co" },
+        { "GET", "get" },
+        { "LEX", "lex" },
+        { "YACC", "yacc" },
+        { "LINT", "lint" },
+        { "MAKEINFO", "makeinfo" },
+        { "TEX", "tex" },
+        { "TEXI2DVI", "texi2dvi" },
+        { "WEAVE", "weave" },
+        { "CWEAVE", "cweave" },
+        { "TANGLE", "tangle" },
+        { "CTANGLE", "ctangle" },
+        { "RM", "rm -f" },
+        { "ARFLAGS", "rv" },
+        { "ASFLAGS", "" },
+        { "CFLAGS", "" },
+        { "CXXFLAGS", "" },
+        { "COFLAGS", "" },
+        { "CPPFLAGS", "" },
+        { "FFLAGS", "" },
+        { "GFLAGS", "" },
+        { "LDFLAGS", "" },
+        { "LDLIBS", "" },
+        { "LFLAGS", "" },
+        { "YFLAGS", "" },
+        { "PFLAGS", "" },
+        { "RFLAGS", "" },
+        { "LINTFLAGS", "" },
+    }
 {
     for (size_t i = 0; i < makefile.size(); ++i)
     {

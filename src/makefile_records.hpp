@@ -33,7 +33,7 @@ class makefile_records
 
         void push_back(const_reference val) { m_records.push_back(val); }
         void push_back(value_type&& val) { m_records.push_back(std::move(val)); }
-        template<typename... Ts> void emplace_back(Ts... vals) { m_records.emplace_back(std::forward<Ts>(vals)...); }
+        template<typename... Ts> void emplace_back(Ts&&... vals) { m_records.emplace_back(std::forward<Ts>(vals)...); }
 
         const makefile_record& find_record(const file& target) const
         {
