@@ -6,7 +6,12 @@
 #include <cstdio>
 #include <cstring>
 #include <getopt.h>
-#include <unistd.h>
+#ifdef _WIN32
+    #include <direct.h>
+    #define chdir _chdir // win chdir is deprecated
+#elif
+    #include <unistd.h>
+#endif
 #include <sys/stat.h>
 #include "main.hpp"
 #include "pmake.hpp"
@@ -116,8 +121,14 @@ int main(int argc, char* argv[])
         while (optind < argc)
             options.set_targets(argv[optind++]);
 
+
     string line, prev;
     ifstream stream(options.get_makefile());
+    if (stream.fail())
+    {
+        cerr << exe_name << ": " << options.get_makefile() << ": No such file. Stop." << endl;
+        return CODE_FAILURE;
+    }
     vector<string> makefile;
     while (getline(stream, line)) // handling lines that ends with a backslash
     {
