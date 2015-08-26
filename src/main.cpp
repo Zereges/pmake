@@ -9,7 +9,7 @@
 #ifdef _WIN32
     #include <direct.h>
     #define chdir _chdir // win chdir is deprecated
-#elif
+#else
     #include <unistd.h>
 #endif
 #include <sys/stat.h>
