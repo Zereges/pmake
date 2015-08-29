@@ -16,7 +16,7 @@ class graph
                 node(T&& value) : m_value(std::forward<T>(value)) { }
                 node& emplace(T&& value)
                 {
-                    auto ptr = std::make_unique<node>(std::forward<T>(value));
+                    auto ptr = std::unique_ptr<node>(new node(std::forward<T>(value)));
                     m_next.push_back(std::move(ptr));
                     return *m_next.back();
                 }
@@ -32,7 +32,7 @@ class graph
                 auto end() const -> decltype(m_next.end()) { return m_next.end(); }
         };
 
-        graph(T&& value) : m_root(std::make_unique<node>(std::forward<T>(value))) { }
+        graph(T&& value) : m_root(new node(std::forward<T>(value))) { }
 
         node& get_root() { return *m_root; }
 
