@@ -16,6 +16,7 @@ class file
         }
 
         time_t get_time() const { return m_time; }
+        bool exists_on_disk() const { return m_time != 0; }
         const std::string& get_name() const { return m_name; }
 
         bool is_recent(const file& f) const { return get_time() > f.get_time(); }
