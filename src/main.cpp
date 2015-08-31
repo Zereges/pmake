@@ -121,15 +121,22 @@ int main(int argc, char* argv[])
         while (optind < argc)
             options.set_targets(argv[optind++]);
 
+    if (options.is_verbose())
+        cout << "Verbose: Finished parsing command line options." << endl;
 
     string line, prev;
     ifstream stream(options.get_makefile());
+    if (options.is_verbose())
+        cout << "Verbose: Opening makefile: '" << options.get_makefile() << "'." << endl;
     if (stream.fail())
     {
         cerr << exe_name << ": " << options.get_makefile() << ": No such file. Stop." << endl;
         return CODE_FAILURE;
     }
     vector<string> makefile;
+    if (options.is_verbose())
+        cout << "Verbose: Merging lines of makefile that ends with '\\'." << endl;
+
     while (getline(stream, line)) // handling lines that ends with a backslash
     {
         if (prev != "")
@@ -153,7 +160,10 @@ int main(int argc, char* argv[])
         makefile.push_back(move(line));
     }
     if (prev != "")
-        cerr << "Unexpected end of file" << endl;
+    {
+        cerr << "Unexpected end of file. Last line of Makefile probably ends with '\\'." << endl;
+        return CODE_FAILURE;
+    }
 
     pmake make;
     try

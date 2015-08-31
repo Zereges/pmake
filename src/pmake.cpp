@@ -94,6 +94,8 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, 
         { "LINTFLAGS", "" },
     }
 {
+    if (m_options.is_verbose())
+        cout << "Parsing makefile: '" << m_options.get_makefile() << "'." << endl;
     for (size_t i = 0; i < makefile.size(); ++i)
     {
         string str = replace_occurences(makefile[i].substr(0, makefile[i].find('#'))); // remove comments and dereference variables
@@ -135,16 +137,20 @@ int pmake::run()
         cerr << m_exe_name << ": No targets. Stop." << endl;
         return CODE_FAILURE;
     }
-    if (!m_options.get_targets().size())
+    if (!m_options.get_targets().size()) // use first target if none is specified.
         m_options.set_default_target(m_records.front().get_target());
 
     for (const file& target : m_options.get_targets())
     {
         try
         {
+            if (m_options.is_verbose())
+                cout << "Verbose: Considering target '" << target.get_name() << "'." << endl;
             switch (process_states state = process_target(m_records.find_record(target)))
             {
             case process_states::UP_TO_DATE:
+                if (m_options.is_verbose())
+                    cout << "Verbose: No need to remake target '" << target.get_name() << "'." << endl;
                 if (!m_options.is_question())
                     cout << m_exe_name << ": '" << target.get_name() << "' is up to date." << endl;
                 break;
@@ -152,6 +158,10 @@ int pmake::run()
                 return CODE_QUESTION_FAILURE;
             case process_states::BUILD_FAILED:
                 return CODE_FAILURE;
+            case process_states::MUST_REBUILD:
+                if (m_options.is_verbose())
+                    cout << "Verbose: Target '" << target.get_name() << "' has been rebuilt." << endl;
+                break;
             default:
                 break;
             }
@@ -173,9 +183,14 @@ process_states pmake::process_target(const makefile_record& record)
     {
         try
         {
+            if (m_options.is_verbose())
+                cout << "Verbose: Checking dependencies for '" << record.get_target().get_name() << "'." << endl;
+
             switch (process_states state = process_target(m_records.find_record(dependency)))
             {
             case process_states::MUST_REBUILD:
+                if (m_options.is_verbose())
+                    cout << "Vecrbose: Target '" << record.get_target().get_name() << "' successfuly rebuilt." << endl;
                 if (m_options.is_question())
                     return process_states::QUESTION_FAILURE;
                 must_rebuild = true;
@@ -189,16 +204,33 @@ process_states pmake::process_target(const makefile_record& record)
         }
         catch (invalid_argument&)
         {
+            if (m_options.is_verbose())
+                cout << "Verbose: Checking timestamp of dependency '" << dependency.get_name() << "'." << endl;
             if (m_options.is_always_make() || dependency.is_recent(record.get_target()))
+            {
+                if (m_options.is_verbose())
+                {
+                    cout << "Verbose: Must rebuild target '" << record.get_target().get_name() << "'.";
+                    if (m_options.is_always_make())
+                        cout << " Option --always-make specified.";
+                    else
+                        cout << " Dependency '" << dependency.get_name() << "' is newer than '" << record.get_target().get_name() << "'.";
+                    cout << endl;
+                }
                 must_rebuild = true;
+            }
         }
     }
     if (must_rebuild)
+    {
+        if (m_options.is_verbose())
+            cout << "Executing commands for '" << record.get_target().get_name() << "'." << endl;
         if (int ret = record.execute(m_options.is_just_print()))
         {
             cerr << m_exe_name << ": recipe for target '" << record.get_target().get_name() << "' failed. (" << ret << "). Stopping" << endl;
             return process_states::BUILD_FAILED;
         }
+    }
 
     return must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;
 }
