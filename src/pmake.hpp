@@ -48,20 +48,9 @@ class pmake
         pmake_variables m_variables;
         makefile_records m_records;
 
-        std::string replace_occurences(const std::string& input)
-        {
-            std::smatch use;
-            std::string s = input;
-            while (regex_search(s, use, var_use)) // dereferencing variable uses in definition
-            {
-                bool is_var = is_variable(use[1]);
-                s = s.replace(use.position(0), use[0].length(), is_var ? get_variable(use[1]) : "");
-                if (!is_var && m_options.is_warn_undefined())
-                    std::cout << "Warning: variable " << use[0] << " is undefined. (--warn-undefined-variables)" << std::endl;
-                use = std::smatch();
-            }
-            return std::move(s);
-        }
+        std::string replace_occurences(const std::string& input);
+
+        std::string is_circular(const file& target, const std::vector<file>& deps);
 
         process_states process_target(const makefile_record& record);
 };

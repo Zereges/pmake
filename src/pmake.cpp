@@ -52,6 +52,38 @@ string& replace(string& what, const string& find, const makefile_record::depende
     return replace(what, find, s);
 }
 
+std::string pmake::replace_occurences(const std::string& input)
+{
+    std::smatch use;
+    std::string s = input;
+    while (regex_search(s, use, var_use)) // dereferencing variable uses in definition
+    {
+        bool is_var = is_variable(use[1]);
+        s = s.replace(use.position(0), use[0].length(), is_var ? get_variable(use[1]) : "");
+        if (!is_var && m_options.is_warn_undefined())
+            std::cout << "Warning: variable " << use[0] << " is undefined. (--warn-undefined-variables)" << std::endl;
+        use = std::smatch();
+    }
+    return std::move(s);
+}
+
+string pmake::is_circular(const file& target, const vector<file>& dependencies)
+{
+    for (const file& dep : dependencies)
+    {
+        try
+        {
+            auto deps = m_records.find_record(dep).get_dependencies();
+            if (std::find(deps.begin(), deps.end(), target) != deps.end())
+                return "'" + target.get_name() + "' -> '" + dep.get_name() + "'";
+            else
+                return is_circular(target, deps);
+        }
+        catch (invalid_argument&) { }
+    }
+    return "";
+}
+
 pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, string&& exe_name) : m_options(move(options)),
     m_exe_name(move(exe_name)),
     m_variables // some of built-in variables according to GNU make man page.
@@ -110,13 +142,19 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, 
             vector<string> targets = split(sm[1], ' ');
             vector<string> dependencies = split(sm[2], ' ');
             add_record(move(targets), move(dependencies), m_options);
+            string circ = is_circular(m_records.back().get_target(), m_records.back().get_dependencies());
+            if (circ != "")
+            {
+                cerr << m_options.get_makefile() << ": Found circular dependency " << circ << "." << endl;
+                throw invalid_argument("Circular dependency");
+            }
         }
         else if (regex_match(str, sm, command_def))
         {
             if (m_records.size() == 0)
             {
                 cerr << m_options.get_makefile() << ": recipe commences before first target. Stop." << endl;
-                throw invalid_argument("Can not recover.");
+                throw invalid_argument("Missing target");
             }
             string s = sm[1]; // implicit cast
             makefile_record& record = m_records.back();
@@ -144,13 +182,9 @@ int pmake::run()
     {
         try
         {
-            if (m_options.is_verbose())
-                cout << "Verbose: Considering target '" << target.get_name() << "'." << endl;
             switch (process_states state = process_target(m_records.find_record(target)))
             {
             case process_states::UP_TO_DATE:
-                if (m_options.is_verbose())
-                    cout << "Verbose: No need to remake target '" << target.get_name() << "'." << endl;
                 if (!m_options.is_question())
                     cout << m_exe_name << ": '" << target.get_name() << "' is up to date." << endl;
                 break;
@@ -158,10 +192,6 @@ int pmake::run()
                 return CODE_QUESTION_FAILURE;
             case process_states::BUILD_FAILED:
                 return CODE_FAILURE;
-            case process_states::MUST_REBUILD:
-                if (m_options.is_verbose())
-                    cout << "Verbose: Target '" << target.get_name() << "' has been rebuilt." << endl;
-                break;
             default:
                 break;
             }
