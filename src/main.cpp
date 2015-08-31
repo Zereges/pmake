@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
     }
     vector<string> makefile;
     if (options.is_verbose())
-        cout << "Verbose: Merging lines of makefile that ends with '\\'." << endl;
+        cout << "Verbose: Merging lines of makefile which end with '\\'." << endl;
 
     while (getline(stream, line)) // handling lines that ends with a backslash
     {

@@ -179,13 +179,12 @@ int pmake::run()
 process_states pmake::process_target(const makefile_record& record)
 {
     bool must_rebuild = record.get_dependencies().empty();
+    if (m_options.is_verbose())
+        cout << "Verbose: Considering target '" << record.get_target().get_name() << "'." << endl;
     for (const file& dependency : record.get_dependencies())
     {
         try
         {
-            if (m_options.is_verbose())
-                cout << "Verbose: Checking dependencies for '" << record.get_target().get_name() << "'." << endl;
-
             switch (process_states state = process_target(m_records.find_record(dependency)))
             {
             case process_states::MUST_REBUILD:
