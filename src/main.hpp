@@ -18,47 +18,51 @@ inline void print_version()
 inline void print_help(const std::string& exe_name)
 {
     std::cout << "Usage: " << exe_name << " [options] [target] ..." << std::endl <<
-        R"--(Options:
+        R"(Options:
     -b, -m
         These options are ignored for compatibility with other versions of make.
 
-            -B, --always-make
-        Unconfitionally make all targets.
+    -B, --always-make
+        Unconditionally make all targets.
 
-            -d, --verbose
+    -d, --verbose
         Print debugging information about what is going on.
 
-            -C dir, --directory=dir
-        Change to directory dir before doing anything, Sunsequent uses of this
+    -C dir, --directory=dir
+        Change to directory dir before doing anything, Subsequent uses of this
         argument will be relative to previous one.
 
-            -f file
+    -f file
         Use file as Makefile.
 
-            -j jobs, --jobs=jobs
+    -h, --help
+        Prints this error message includion version and author and exits with
+        success.
+
+    -j jobs, --jobs=jobs
         Specifies the number jobs (commands) to run simultaneously. This is
         implicitely on with jobs=number of cores.
 
-            -n, --just-print, --dry-run, --recon
+    -n, --just-print, --dry-run, --recon
         Print the commands that would be executed, but do not execute them.
 
-            -q, --question
+    -q, --question
         "Question mode". Do not run any commands, or print anything; just return
         an exit status that is zero if the specified targets are already up
         to date, nonzero otherwise.
 
-            -v, --version
+    -v, --version
         Print a message containing version and author. After the message is
         printed, pmake will exit.
 
-            -W file, --what-if=file, --new-file=file, --assume-new=file
+    -W file, --what-if=file, --new-file=file, --assume-new=file
         Pretend that the target file has just been  modified. It is almost the
         same as running a touch command on the given file before running make,
         except that the modification time is changed only in the imagination of
         make.
 
-            --warn-undefined-variables
-        Warn when an undefined variable is referenced.)--" << std::endl << std::endl;
+    --warn-undefined-variables
+        Warn when an undefined variable is referenced.)" << std::endl << std::endl;
 
     print_version();
 }

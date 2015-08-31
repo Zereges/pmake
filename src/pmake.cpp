@@ -52,7 +52,8 @@ string& replace(string& what, const string& find, const makefile_record::depende
     return replace(what, find, s);
 }
 
-pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) : m_options(std::move(options)),
+pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, string&& exe_name) : m_options(move(options)),
+    m_exe_name(move(exe_name)),
     m_variables // some of built-in variables according to GNU make man page.
     {
         { "AR", "ar" },
@@ -127,11 +128,11 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options) 
     }
 }
 
-int pmake::run(const std::string& exe_name)
+int pmake::run()
 {
     if (!m_records.size())
     {
-        cerr << exe_name << ": No targets. Stop." << endl;
+        cerr << m_exe_name << ": No targets. Stop." << endl;
         return CODE_FAILURE;
     }
     if (!m_options.get_targets().size())
@@ -141,15 +142,20 @@ int pmake::run(const std::string& exe_name)
     {
         try
         {
-            process_states state = process_target(m_records.find_record(target));
-            if (state == process_states::UP_TO_DATE && !m_options.is_question())
-                cout << exe_name << ": '" << target.get_name() << "' is up to date." << endl;
-            else if (state == process_states::QUESTION_FAILURE)
+            switch (process_states state = process_target(m_records.find_record(target)))
+            {
+            case process_states::UP_TO_DATE:
+                if (!m_options.is_question())
+                    cout << m_exe_name << ": '" << target.get_name() << "' is up to date." << endl;
+                break;
+            case process_states::QUESTION_FAILURE:
                 return CODE_QUESTION_FAILURE;
+                break;
+            }
         }
         catch (invalid_argument&)
         {
-            cerr << exe_name << ": No rule to build target '" << target.get_name() << "'. Stop" << endl;
+            cerr << m_exe_name << ": No rule to build target '" << target.get_name() << "'. Stop" << endl;
             return CODE_FAILURE;
         }
     }
@@ -164,15 +170,17 @@ process_states pmake::process_target(const makefile_record& record)
     {
         try
         {
-            process_states state = process_target(m_records.find_record(dependency));
-            if (state == process_states::MUST_REBUILD)
+            switch (process_states state = process_target(m_records.find_record(dependency)))
             {
+            case process_states::MUST_REBUILD:
                 if (m_options.is_question())
                     return process_states::QUESTION_FAILURE;
                 must_rebuild = true;
-            }
-            else if (state == process_states::QUESTION_FAILURE)
+                break;
+            case process_states::QUESTION_FAILURE:
                 return process_states::QUESTION_FAILURE;
+                break;
+            }
         }
         catch (invalid_argument&)
         {
@@ -181,7 +189,11 @@ process_states pmake::process_target(const makefile_record& record)
         }
     }
     if (must_rebuild)
-        record.execute(m_options.is_just_print());
+        if (int ret = record.execute(m_options.is_just_print()))
+        {
+            cerr << m_exe_name << ": recipe for target '" << record.get_target().get_name() << "' failed. (" << ret << "). Stopping" << endl;
+            return process_states::BUILD_FAILED;
+        }
 
     return must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;
 }

@@ -158,12 +158,12 @@ int main(int argc, char* argv[])
     pmake make;
     try
     {
-        make = pmake(makefile, move(options));
+        make = pmake(makefile, move(options), move(exe_name));
     }
     catch (invalid_argument&)
     {
         return CODE_FAILURE;
     }
 
-    return make.run(exe_name);
+    return make.run();
 }

@@ -53,10 +53,10 @@ class makefile_record
         {
             for (const std::string& command : m_commands)
             {
-                if (only_print)
-                    std::cout << command << std::endl;
-                else if (int ret = system(command.c_str()))
-                    return ret;
+                std::cout << command << std::endl;
+                if (!only_print)
+                    if (int ret = system(command.c_str()))
+                        return ret;
             }
 
             return 0;
