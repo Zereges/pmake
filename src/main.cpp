@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
         case 'f':
         {
             struct stat buf;
-            if (stat(optarg, &buf))
+            if (!stat(optarg, &buf))
                 options.set_make_file(optarg);
             else
                 cerr << exe_name << ": " << optarg << ": no such file. Ignoring." << endl;
