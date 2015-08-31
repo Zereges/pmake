@@ -15,4 +15,4 @@ clean:
 	$(RM) *.o
 
 install: pmake
-    echo symlink to /usr/bin
+	echo symlink to /usr/bin
