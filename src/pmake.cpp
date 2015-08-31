@@ -141,12 +141,15 @@ int pmake::run(const std::string& exe_name)
     {
         try
         {
-            if (!process_target(m_records.find_record(target)))
+            process_states state = process_target(m_records.find_record(target));
+            if (state == process_states::UP_TO_DATE && !m_options.is_question())
                 cout << exe_name << ": '" << target.get_name() << "' is up to date." << endl;
+            else if (state == process_states::QUESTION_FAILURE)
+                return CODE_QUESTION_FAILURE;
         }
         catch (invalid_argument&)
         {
-            cerr << exe_name << ": No rule to build target " << target.get_name() << ". Stop" << endl;
+            cerr << exe_name << ": No rule to build target '" << target.get_name() << "'. Stop" << endl;
             return CODE_FAILURE;
         }
     }
@@ -154,23 +157,31 @@ int pmake::run(const std::string& exe_name)
     return CODE_SUCCESS;
 }
 
-bool pmake::process_target(const makefile_record& record)
+process_states pmake::process_target(const makefile_record& record)
 {
     bool must_rebuild = record.get_dependencies().empty();
     for (const file& dependency : record.get_dependencies())
     {
         try
         {
-            if (process_target(m_records.find_record(dependency)))
+            process_states state = process_target(m_records.find_record(dependency));
+            if (state == process_states::MUST_REBUILD)
+            {
+                if (m_options.is_question())
+                    return process_states::QUESTION_FAILURE;
                 must_rebuild = true;
+            }
+            else if (state == process_states::QUESTION_FAILURE)
+                return process_states::QUESTION_FAILURE;
         }
         catch (invalid_argument&)
         {
-            if (dependency.is_recent(record.get_target()))
+            if (m_options.is_always_make() || dependency.is_recent(record.get_target()))
                 must_rebuild = true;
         }
     }
     if (must_rebuild)
-        record.execute(true);
-    return must_rebuild;
+        record.execute(m_options.is_just_print());
+
+    return must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;
 }

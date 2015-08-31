@@ -7,6 +7,13 @@
 #include "makefile_records.hpp"
 #include "makefile_record.hpp"
 
+enum class process_states
+{
+    MUST_REBUILD,
+    UP_TO_DATE,
+    QUESTION_FAILURE,
+};
+
 class pmake
 {
     public:
@@ -52,5 +59,5 @@ class pmake
             return std::move(s);
         }
 
-        bool process_target(const makefile_record& record);
+        process_states process_target(const makefile_record& record);
 };

@@ -3,7 +3,7 @@
 #include <string>
 #include <algorithm>
 
-enum
+enum ret_values
 {
     CODE_SUCCESS = 0,
     CODE_QUESTION_FAILURE = 1,
