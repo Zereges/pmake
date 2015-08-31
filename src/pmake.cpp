@@ -150,6 +150,9 @@ int pmake::run()
                 break;
             case process_states::QUESTION_FAILURE:
                 return CODE_QUESTION_FAILURE;
+            case process_states::BUILD_FAILED:
+                return CODE_FAILURE;
+            default:
                 break;
             }
         }
@@ -178,7 +181,9 @@ process_states pmake::process_target(const makefile_record& record)
                 must_rebuild = true;
                 break;
             case process_states::QUESTION_FAILURE:
-                return process_states::QUESTION_FAILURE;
+            case process_states::BUILD_FAILED:
+                return state; // like throw;
+            default:
                 break;
             }
         }
