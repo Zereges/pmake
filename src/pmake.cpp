@@ -137,5 +137,39 @@ int pmake::run(const std::string& exe_name)
     if (!m_options.get_targets().size())
         m_options.set_default_target(m_records.front().get_target());
 
+    for (const file& target : m_options.get_targets())
+    {
+        try
+        {
+            process_target(m_records.find_record(target));
+        }
+        catch (invalid_argument&)
+        {
+            cerr << exe_name << ": No rule to build target " << target.get_name() << ". Stop" << endl;
+            return CODE_FAILURE;
+        }
+    }
+
     return CODE_SUCCESS;
+}
+
+bool pmake::process_target(const makefile_record& record)
+{
+    bool must_rebuild = record.get_dependencies().empty();
+    for (const file& dependency : record.get_dependencies())
+    {
+        try
+        {
+            if (process_target(m_records.find_record(dependency)))
+                must_rebuild = true;
+        }
+        catch (invalid_argument&)
+        {
+            if (dependency.is_recent(record.get_target()))
+                must_rebuild = true;
+        }
+    }
+    if (must_rebuild)
+        record.execute(true);
+    return must_rebuild;
 }

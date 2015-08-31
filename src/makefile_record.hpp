@@ -49,6 +49,19 @@ class makefile_record
             return std::move(recent);
         }
 
+        int execute(bool only_print = false) const
+        {
+            for (const std::string& command : m_commands)
+            {
+                if (only_print)
+                    std::cout << command << std::endl;
+                else if (int ret = system(command.c_str()))
+                    return ret;
+            }
+
+            return 0;
+        }
+
         void add_command(std::string&& command) { m_commands.emplace_back(std::move(command)); }
 
     private:

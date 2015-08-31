@@ -1,4 +1,4 @@
-CXXFLAGS=-c -std=c++11 -g -Wall
+CXXFLAGS=-c -std=c++11 -Wall
 LDFLAGS=-o pmake
 WITH-DEBUG=-g
 

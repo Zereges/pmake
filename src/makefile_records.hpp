@@ -37,9 +37,14 @@ class makefile_records
 
         const makefile_record& find_record(const file& target) const
         {
-            return *std::find_if(begin(), end(), [&target](const makefile_record& rec)
+            const_iterator iter = std::find_if(begin(), end(), [&target](const makefile_record& rec)
             {
                 return rec.get_target() == target;
             });
+
+            if (iter == end())
+                throw std::invalid_argument("Not found");
+
+            return *iter;
         }
 };

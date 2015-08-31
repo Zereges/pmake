@@ -23,7 +23,7 @@ class pmake_options
         void set_files(const std::string& file) { m_files.push_back(file); }
         void set_targets(std::string&& target) { m_targets.emplace_back(std::move(target)); }
 
-        bool is_alwyas_make() const { return m_always_make; }
+        bool is_always_make() const { return m_always_make; }
         bool is_verbose() const { return m_verbose; }
         bool is_just_print() const { return m_just_print; }
         bool is_question() const { return m_question; }

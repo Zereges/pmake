@@ -15,7 +15,7 @@ class pmake
         pmake() = default;
         pmake(const std::vector<std::string>& makefile, pmake_options&& options);
 
-        void add_variable(const std::string& name, const std::string& value) { m_variables.emplace(name, value); }
+        void add_variable(const std::string& name, const std::string& value) { m_variables[name] = value; }
         bool is_variable(const std::string& name) const { return m_variables.end() != m_variables.find(name); }
         const std::string& get_variable(const std::string& name) const { return m_variables.at(name); }
 
@@ -51,4 +51,6 @@ class pmake
             }
             return std::move(s);
         }
+
+        bool process_target(const makefile_record& record);
 };
