@@ -26,20 +26,20 @@ int main(int argc, char* argv[])
     {
         static struct option long_options[] =
         {
-            { "always-make",       no_argument, 0, 'B' },
-            { "verbose",       no_argument, 0, 'd' },
-            { "directory", required_argument, 0, 'C' },
-            { "jobs", required_argument, 0, 'j' },
-            { "just-print",       no_argument, 0, 'n' },
-            { "dry-run",       no_argument, 0, 'n' },
-            { "recon",       no_argument, 0, 'n' },
-            { "question",       no_argument, 0, 'q' },
-            { "version",       no_argument, 0, 'v' },
-            { "what-if", required_argument, 0, 'W' },
-            { "dry-run", required_argument, 0, 'W' },
-            { "recon", required_argument, 0, 'W' },
-            { "help",       no_argument, 0, 'h' },
-            { "warn-undefined-variables",       no_argument, 0,  0 },
+            {              "always-make",       no_argument, 0, 'B' },
+            {                  "verbose",       no_argument, 0, 'd' },
+            {                "directory", required_argument, 0, 'C' },
+            {                     "jobs", required_argument, 0, 'j' },
+            {               "just-print",       no_argument, 0, 'n' },
+            {                  "dry-run",       no_argument, 0, 'n' },
+            {                    "recon",       no_argument, 0, 'n' },
+            {                 "question",       no_argument, 0, 'q' },
+            {                  "version",       no_argument, 0, 'v' },
+            {                  "what-if", required_argument, 0, 'W' },
+            {                  "dry-run", required_argument, 0, 'W' },
+            {                    "recon", required_argument, 0, 'W' },
+            {                     "help",       no_argument, 0, 'h' },
+            { "warn-undefined-variables",       no_argument, 0,  0  },
             { 0, 0, 0, 0 }
         };
         int option_index = 0;

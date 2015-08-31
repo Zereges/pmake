@@ -141,7 +141,8 @@ int pmake::run(const std::string& exe_name)
     {
         try
         {
-            process_target(m_records.find_record(target));
+            if (!process_target(m_records.find_record(target)))
+                cout << exe_name << ": '" << target.get_name() << "' is up to date." << endl;
         }
         catch (invalid_argument&)
         {
