@@ -95,7 +95,7 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, 
     }
 {
     if (m_options.is_verbose())
-        cout << "Parsing makefile: '" << m_options.get_makefile() << "'." << endl;
+        cout << "Verbose: Parsing makefile: '" << m_options.get_makefile() << "'." << endl;
     for (size_t i = 0; i < makefile.size(); ++i)
     {
         string str = replace_occurences(makefile[i].substr(0, makefile[i].find('#'))); // remove comments and dereference variables
@@ -190,7 +190,7 @@ process_states pmake::process_target(const makefile_record& record)
             {
             case process_states::MUST_REBUILD:
                 if (m_options.is_verbose())
-                    cout << "Vecrbose: Target '" << record.get_target().get_name() << "' successfuly rebuilt." << endl;
+                    cout << "Verbose: Target '" << record.get_target().get_name() << "' successfuly rebuilt." << endl;
                 if (m_options.is_question())
                     return process_states::QUESTION_FAILURE;
                 must_rebuild = true;
@@ -224,7 +224,7 @@ process_states pmake::process_target(const makefile_record& record)
     if (must_rebuild)
     {
         if (m_options.is_verbose())
-            cout << "Executing commands for '" << record.get_target().get_name() << "'." << endl;
+            cout << "Verbose: Executing commands for '" << record.get_target().get_name() << "'." << endl;
         if (int ret = record.execute(m_options.is_just_print()))
         {
             cerr << m_exe_name << ": recipe for target '" << record.get_target().get_name() << "' failed. (" << ret << "). Stopping" << endl;
