@@ -252,6 +252,8 @@ process_states pmake::process_target(const makefile_record& record)
     }
     if (must_rebuild)
     {
+        if (m_options.is_question())
+            return process_states::QUESTION_FAILURE;
         if (m_options.is_verbose())
             cout << "Verbose: Executing commands for '" << record.get_target().get_name() << "'." << endl;
         if (int ret = record.execute(m_options.is_just_print()))
