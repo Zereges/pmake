@@ -3,8 +3,11 @@
 #include <tuple>
 #include <functional>
 
+template<typename F>
+class my_thread;
+
 template<typename Return, typename... Input>
-class my_thread
+class my_thread<Return(Input...)>
 {
     private:
         template<int...> struct seq { }; // idea based on http://stackoverflow.com/a/7858971/3087601
