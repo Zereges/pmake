@@ -14,7 +14,7 @@ class my_thread
         struct thread_data
         {
             template<typename F>
-            thread_data(F&& _func, Input&&... _input) : func(std::move(_func)), input(std::forward<Input>(_input)...) { }
+            thread_data(F&& _func, Input&&... _input) : input(std::forward<Input>(_input)...), func(std::move(_func)) { }
 
             template<int... S> Return call_wrapper(seq<S...>) { return func(std::get<S>(input)...); }
 
