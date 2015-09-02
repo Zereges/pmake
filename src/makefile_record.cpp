@@ -1,10 +1,11 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
+#include <ctime>
 #include "makefile_record.hpp"
 #include "pmake_options.hpp"
 #include "file.hpp"
-
 
 makefile_record::makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options) : m_completed(false)
 {

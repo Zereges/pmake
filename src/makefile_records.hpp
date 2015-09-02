@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "makefile_record.hpp"
+#include "file.hpp"
 
 class makefile_records
 {

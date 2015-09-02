@@ -1,7 +1,7 @@
 #pragma once
-#include <pthread.h>
 #include <tuple>
 #include <functional>
+#include <pthread.h>
 
 template<typename F>
 class my_thread;

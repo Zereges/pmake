@@ -1,8 +1,4 @@
 #pragma once
-#include <string>
-#include <sys/stat.h>
-#include <vector>
-#include <algorithm>
 
 class file
 {
