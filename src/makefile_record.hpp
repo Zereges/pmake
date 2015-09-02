@@ -29,39 +29,12 @@ class makefile_record
 
         const file& get_target() const { return m_targets.front(); }
         const dependencies& get_dependencies() const { return m_dependencies; }
-
         bool has_target(const file& t) const { return find(m_targets.begin(), m_targets.end(), t) != m_targets.end(); }
 
-        dependencies get_dependencies_stripped() const
-        {
-            dependencies copy = m_dependencies;
-            std::sort(copy.begin(), copy.end());
-            copy.erase(std::unique(copy.begin(), copy.end()), copy.end());
-            return std::move(copy);
-        }
-        dependencies get_dependencies_recent() const
-        {
-            dependencies recent;
-            for (const file& dep : m_dependencies)
-                if (dep.is_recent(m_targets.front()))
-                    recent.push_back(dep);
+        dependencies get_dependencies_stripped() const;
+        dependencies get_dependencies_recent() const;
 
-            return std::move(recent);
-        }
-
-        int execute(bool only_print = false)
-        {
-            for (const std::string& command : m_commands)
-            {
-                std::cout << command << std::endl;
-                if (!only_print)
-                    if (int ret = system(command.c_str()))
-                        return ret;
-            }
-            m_completed = true;
-            return 0;
-        }
-
+        int execute(bool only_print = false);
         bool is_built() const { return m_completed; }
 
         void add_command(std::string&& command) { m_commands.emplace_back(std::move(command)); }
