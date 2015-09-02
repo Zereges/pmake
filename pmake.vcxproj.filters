@@ -44,5 +44,8 @@
     <ClInclude Include="src\thread.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\mutex.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

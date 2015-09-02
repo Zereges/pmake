@@ -52,5 +52,5 @@ class pmake
 
         std::string is_circular(const file& target, const std::vector<file>& deps);
 
-        process_states process_target(const makefile_record& record);
+        process_states process_target(makefile_record& record);
 };

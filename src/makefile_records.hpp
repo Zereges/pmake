@@ -35,9 +35,9 @@ class makefile_records
         void push_back(value_type&& val) { m_records.push_back(std::move(val)); }
         template<typename... Ts> void emplace_back(Ts&&... vals) { m_records.emplace_back(std::forward<Ts>(vals)...); }
 
-        const makefile_record& find_record(const file& target) const
+        makefile_record& find_record(const file& target)
         {
-            const_iterator iter = std::find_if(begin(), end(), [&target](const makefile_record& rec)
+            iterator iter = std::find_if(begin(), end(), [&target](const makefile_record& rec)
             {
                 return rec.get_target() == target;
             });

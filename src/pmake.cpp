@@ -206,8 +206,10 @@ int pmake::run()
     return CODE_SUCCESS;
 }
 
-process_states pmake::process_target(const makefile_record& record)
+process_states pmake::process_target(makefile_record& record)
 {
+    if (record.is_built())
+        return process_states::UP_TO_DATE;
     bool must_rebuild = record.get_dependencies().empty();
     if (m_options.is_verbose())
         cout << "Verbose: Considering target '" << record.get_target().get_name() << "'." << endl;

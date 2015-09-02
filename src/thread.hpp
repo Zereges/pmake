@@ -17,7 +17,7 @@ class my_thread<Return(Input...)>
         struct thread_data
         {
             template<typename F>
-            thread_data(F&& _func, Input&&... _input) : input(std::forward<Input>(_input)...), func(std::move(_func)), m_joinable = true { }
+            thread_data(F&& _func, Input&&... _input) : input(std::forward<Input>(_input)...), func(std::move(_func)) { }
 
             template<int... S> Return call_wrapper(seq<S...>) { return func(std::get<S>(input)...); }
 
@@ -31,7 +31,7 @@ class my_thread<Return(Input...)>
 
     public:
         template<typename F>
-        my_thread(F&& f, Input&&... value) : m_data(std::move(f), std::forward<Input>(value)...)
+        my_thread(F&& f, Input&&... value) : m_data(std::move(f), std::forward<Input>(value)...), m_joinable(true)
         {
             pthread_create(&m_id, NULL, thread_func, &m_data);
         }

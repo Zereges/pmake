@@ -10,7 +10,7 @@ class makefile_record
         using dependencies = std::vector<file>;
         using targets = std::vector<file>;
 
-        makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options)
+        makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options) : m_completed(false)
         {
             const std::vector<std::string> files = options.get_files();
             for (std::string& tar : targets)
@@ -49,7 +49,7 @@ class makefile_record
             return std::move(recent);
         }
 
-        int execute(bool only_print = false) const
+        int execute(bool only_print = false)
         {
             for (const std::string& command : m_commands)
             {
@@ -58,9 +58,11 @@ class makefile_record
                     if (int ret = system(command.c_str()))
                         return ret;
             }
-
+            m_completed = true;
             return 0;
         }
+
+        bool is_built() const { return m_completed; }
 
         void add_command(std::string&& command) { m_commands.emplace_back(std::move(command)); }
 
@@ -68,4 +70,5 @@ class makefile_record
         targets m_targets;
         dependencies m_dependencies;
         std::vector<std::string> m_commands;
+        bool m_completed;
 };
