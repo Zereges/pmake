@@ -22,6 +22,7 @@ bool makefile_record::is_recent(const file& tar) const
             return false;
     return true;
 }
+
 makefile_record::dependencies makefile_record::get_dependencies_stripped() const
 {
     dependencies copy = m_dependencies;
@@ -29,6 +30,7 @@ makefile_record::dependencies makefile_record::get_dependencies_stripped() const
     copy.erase(std::unique(copy.begin(), copy.end()), copy.end());
     return std::move(copy);
 }
+
 makefile_record::dependencies makefile_record::get_dependencies_recent() const
 {
     dependencies recent;
@@ -39,7 +41,7 @@ makefile_record::dependencies makefile_record::get_dependencies_recent() const
     return std::move(recent);
 }
 
-int makefile_record::execute(bool only_print = false)
+int makefile_record::execute(bool only_print)
 {
     for (const std::string& command : m_commands)
     {

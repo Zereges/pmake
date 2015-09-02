@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\makefile_record.cpp" />
     <ClCompile Include="src\pmake.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -10,22 +10,9 @@ class makefile_record
         using dependencies = std::vector<file>;
         using targets = std::vector<file>;
 
-        makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options) : m_completed(false)
-        {
-            const std::vector<std::string> files = options.get_files();
-            for (std::string& tar : targets)
-                m_targets.emplace_back(std::move(tar), std::find(files.begin(), files.end(), tar) != files.end() ? time(0) : 0);
-            for (std::string& dep : dependencies)
-                m_dependencies.emplace_back(std::move(dep), std::find(files.begin(), files.end(), dep) != files.end() ? time(0) : 0);
-        }
+        makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options);
 
-        bool is_recent(const file& tar) const
-        {
-            for (const file& dep : m_dependencies)
-                if (dep.is_recent(tar))
-                    return false;
-            return true;
-        }
+        bool is_recent(const file& tar) const;
 
         const file& get_target() const { return m_targets.front(); }
         const dependencies& get_dependencies() const { return m_dependencies; }
