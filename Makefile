@@ -19,5 +19,5 @@ rebuild: clean pmake
 clean:
 	$(RM) *.o
 
-install: pmake
-    cp pmake /usr/bin/pmake
+install:
+	cp pmake /usr/bin/pmake
