@@ -12,7 +12,7 @@ main.o: src/main.cpp src/main.hpp src/pmake.hpp src/pmake_options.hpp src/makefi
 	$(CXX) $(CXXFLAGS) $(WITH-DEBUG) $<
 
 makefile_record.o: src/makefile_record.cpp src/makefile_record.hpp src/pmake_options.hpp src/file.hpp
-    $(CXX) $(CXXFLAGS) $(WITH-DEBUG) $<
+	$(CXX) $(CXXFLAGS) $(WITH-DEBUG) $<
 
 rebuild: clean pmake
 
