@@ -8,30 +8,29 @@
 #include "makefile_record.hpp"
 #include "pmake_options.hpp"
 #include "file.hpp"
-using namespace std;
 
-const regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *([^ ]+.*))");
-const regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
-const regex pmake::target_def(R"(([^:]+):(.*))");
-const regex pmake::command_def(R"(^\s*(.+)\s*$)");
-const regex pmake::item_def(R"(^\s*(.+)\s*$)");
+const std::regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *([^ ]+.*))");
+const std::regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
+const std::regex pmake::target_def(R"(([^:]+):(.*))");
+const std::regex pmake::command_def(R"(^\s*(.+)\s*$)");
+const std::regex pmake::item_def(R"(^\s*(.+)\s*$)");
 
-vector<string> split(const string& str, char delim)
+std::vector<std::string> split(const std::string& str, char delim)
 {
-    vector<std::string> elems;
-    stringstream ss(str);
-    string item;
+    std::vector<std::string> elems;
+    std::stringstream ss(str);
+    std::string item;
     while (getline(ss, item, delim))
     {
-        smatch sm;
-        if (regex_match(item, sm, pmake::item_def)) // removing empty strings.
+        std::smatch sm;
+        if (std::regex_match(item, sm, pmake::item_def)) // removing empty strings.
             elems.push_back(sm[1]);
     }
 
     return move(elems);
 }
 
-string& replace(string& what, const string& find, const string& replace)
+std::string& replace(std::string& what, const std::string& find, const std::string& replace)
 {
     size_t pos = 0;
     while ((pos = what.find(find, pos)) != std::string::npos)
@@ -42,9 +41,9 @@ string& replace(string& what, const string& find, const string& replace)
     return what;
 }
 
-string& replace(string& what, const string& find, const makefile_record::dependencies& replaces)
+std::string& replace(std::string& what, const std::string& find, const makefile_record::dependencies& replaces)
 {
-    string s;
+    std::string s;
     for (const file& dep : replaces)
         s += (dep.get_name() + " ");
     if (s.length())
@@ -67,7 +66,7 @@ std::string pmake::replace_occurences(const std::string& input)
     return std::move(s);
 }
 
-string pmake::is_circular(const file& target, const vector<file>& dependencies)
+std::string pmake::is_circular(const file& target, const std::vector<file>& dependencies)
 {
     for (const file& dep : dependencies)
     {
@@ -79,12 +78,12 @@ string pmake::is_circular(const file& target, const vector<file>& dependencies)
             else
                 return is_circular(target, deps);
         }
-        catch (invalid_argument&) { }
+        catch (std::invalid_argument&) { }
     }
     return "";
 }
 
-pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, string&& exe_name) : m_options(move(options)),
+pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, std::string&& exe_name) : m_options(std::move(options)),
     m_exe_name(move(exe_name)),
     m_variables // some of built-in variables according to GNU make man page.
     {
@@ -127,11 +126,11 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, 
     }
 {
     if (m_options.is_verbose())
-        cout << "Verbose: Parsing makefile: '" << m_options.get_makefile() << "'." << endl;
+        std::cout << "Verbose: Parsing makefile: '" << m_options.get_makefile() << "'." << std::endl;
     for (size_t i = 0; i < makefile.size(); ++i)
     {
-        string str = replace_occurences(makefile[i].substr(0, makefile[i].find('#'))); // remove comments and dereference variables
-        smatch sm;
+        std::string str = replace_occurences(makefile[i].substr(0, makefile[i].find('#'))); // remove comments and dereference variables
+        std::smatch sm;
         if (regex_match(str, sm, var_def)) // variable definition
         {
             add_variable(sm[1], sm[2]);
@@ -139,31 +138,31 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, 
         }
         else if (regex_match(str, sm, target_def)) // target definiton
         {
-            vector<string> targets = split(sm[1], ' ');
-            vector<string> dependencies = split(sm[2], ' ');
+            std::vector<std::string> targets = split(sm[1], ' ');
+            std::vector<std::string> dependencies = split(sm[2], ' ');
             add_record(move(targets), move(dependencies), m_options);
-            string circ = is_circular(m_records.back().get_target(), m_records.back().get_dependencies());
+            std::string circ = is_circular(m_records.back().get_target(), m_records.back().get_dependencies());
             if (circ != "")
             {
-                cerr << m_options.get_makefile() << ": Found circular dependency " << circ << "." << endl;
-                throw invalid_argument("Circular dependency");
+                std::cerr << m_options.get_makefile() << ": Found circular dependency " << circ << "." << std::endl;
+                throw std::invalid_argument("Circular dependency");
             }
         }
         else if (regex_match(str, sm, command_def))
         {
             if (m_records.size() == 0)
             {
-                cerr << m_options.get_makefile() << ": recipe commences before first target. Stop." << endl;
-                throw invalid_argument("Missing target");
+                std::cerr << m_options.get_makefile() << ": recipe commences before first target. Stop." << std::endl;
+                throw std::invalid_argument("Missing target");
             }
-            string s = sm[1]; // implicit cast
+            std::string s = sm[1]; // implicit cast
             makefile_record& record = m_records.back();
             replace(s, "$@", record.get_target().get_name());
             replace(s, "$?", record.get_dependencies_recent());
             replace(s, "$^", record.get_dependencies_stripped());
             replace(s, "$+", record.get_dependencies());
             replace(s, "$<", record.get_dependencies().empty() ? "" : record.get_dependencies().front().get_name());
-            record.add_command(move(s));
+            record.add_command(std::move(s));
         }
     }
 }
@@ -172,7 +171,7 @@ int pmake::run()
 {
     if (!m_records.size())
     {
-        cerr << m_exe_name << ": No targets. Stop." << endl;
+        std::cerr << m_exe_name << ": No targets. Stop." << std::endl;
         return CODE_FAILURE;
     }
     if (!m_options.get_targets().size()) // use first target if none is specified.
@@ -182,11 +181,11 @@ int pmake::run()
     {
         try
         {
-            switch (process_states state = process_target(m_records.find_record(target)))
+            switch (/*process_states state = */process_target(m_records.find_record(target)))
             {
             case process_states::UP_TO_DATE:
                 if (!m_options.is_question())
-                    cout << m_exe_name << ": '" << target.get_name() << "' is up to date." << endl;
+                    std::cout << m_exe_name << ": '" << target.get_name() << "' is up to date." << std::endl;
                 break;
             case process_states::QUESTION_FAILURE:
                 return CODE_QUESTION_FAILURE;
@@ -196,9 +195,9 @@ int pmake::run()
                 break;
             }
         }
-        catch (invalid_argument&)
+        catch (std::invalid_argument&)
         {
-            cerr << m_exe_name << ": No rule to build target '" << target.get_name() << "'. Stop" << endl;
+            std::cerr << m_exe_name << ": No rule to build target '" << target.get_name() << "'. Stop" << std::endl;
             return CODE_FAILURE;
         }
     }
@@ -212,7 +211,7 @@ process_states pmake::process_target(makefile_record& record)
         return process_states::UP_TO_DATE;
     bool must_rebuild = record.get_dependencies().empty();
     if (m_options.is_verbose())
-        cout << "Verbose: Considering target '" << record.get_target().get_name() << "'." << endl;
+        std::cout << "Verbose: Considering target '" << record.get_target().get_name() << "'." << std::endl;
     for (const file& dependency : record.get_dependencies())
     {
         try
@@ -221,7 +220,7 @@ process_states pmake::process_target(makefile_record& record)
             {
             case process_states::MUST_REBUILD:
                 if (m_options.is_verbose())
-                    cout << "Verbose: Target '" << record.get_target().get_name() << "' successfuly rebuilt." << endl;
+                    std::cout << "Verbose: Target '" << record.get_target().get_name() << "' successfuly rebuilt." << std::endl;
                 if (m_options.is_question())
                     return process_states::QUESTION_FAILURE;
                 must_rebuild = true;
@@ -233,20 +232,20 @@ process_states pmake::process_target(makefile_record& record)
                 break;
             }
         }
-        catch (invalid_argument&)
+        catch (std::invalid_argument&)
         {
             if (m_options.is_verbose())
-                cout << "Verbose: Checking timestamp of dependency '" << dependency.get_name() << "'." << endl;
+                std::cout << "Verbose: Checking timestamp of dependency '" << dependency.get_name() << "'." << std::endl;
             if (m_options.is_always_make() || dependency.is_recent(record.get_target()))
             {
                 if (m_options.is_verbose())
                 {
-                    cout << "Verbose: Must rebuild target '" << record.get_target().get_name() << "'.";
+                    std::cout << "Verbose: Must rebuild target '" << record.get_target().get_name() << "'.";
                     if (m_options.is_always_make())
-                        cout << " Option --always-make specified.";
+                        std::cout << " Option --always-make specified.";
                     else
-                        cout << " Dependency '" << dependency.get_name() << "' is newer than '" << record.get_target().get_name() << "'.";
-                    cout << endl;
+                        std::cout << " Dependency '" << dependency.get_name() << "' is newer than '" << record.get_target().get_name() << "'.";
+                    std::cout << std::endl;
                 }
                 must_rebuild = true;
             }
@@ -257,10 +256,10 @@ process_states pmake::process_target(makefile_record& record)
         if (m_options.is_question())
             return process_states::QUESTION_FAILURE;
         if (m_options.is_verbose())
-            cout << "Verbose: Executing commands for '" << record.get_target().get_name() << "'." << endl;
+            std::cout << "Verbose: Executing commands for '" << record.get_target().get_name() << "'." << std::endl;
         if (int ret = record.execute(m_options.is_just_print()))
         {
-            cerr << m_exe_name << ": recipe for target '" << record.get_target().get_name() << "' failed. (" << ret << "). Stopping" << endl;
+            std::cerr << m_exe_name << ": recipe for target '" << record.get_target().get_name() << "' failed. (" << ret << "). Stopping" << std::endl;
             return process_states::BUILD_FAILED;
         }
     }

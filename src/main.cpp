@@ -16,13 +16,12 @@
 #include "main.hpp"
 #include "pmake.hpp"
 #include "pmake_options.hpp"
-using namespace std;
 
 int main(int argc, char* argv[])
 {
     pmake_options options;
-    string exe_name = argv[0];
-    while (true)
+    std::string exe_name = argv[0];
+    for (;;)
     {
         static struct option long_options[] =
         {
@@ -70,7 +69,7 @@ int main(int argc, char* argv[])
         case 'C':
             if (chdir(optarg))
             {
-                cerr << exe_name << ": " << optarg << ": No such file or directory. Stop." << endl;
+                std::cerr << exe_name << ": " << optarg << ": No such file or directory. Stop." << std::endl;
                 return CODE_FAILURE;
             }
             break;
@@ -80,7 +79,7 @@ int main(int argc, char* argv[])
             if (!stat(optarg, &buf))
                 options.set_make_file(optarg);
             else
-                cerr << exe_name << ": " << optarg << ": no such file. Ignoring." << endl;
+                std::cerr << exe_name << ": " << optarg << ": no such file. Ignoring." << std::endl;
             break;
         }
         case 'j':
@@ -90,7 +89,7 @@ int main(int argc, char* argv[])
                 options.set_jobs(jobs);
             else
             {
-                cerr << exe_name << ": the '-j' option requires a positive integer argument." << endl;
+                std::cerr << exe_name << ": the '-j' option requires a positive integer argument." << std::endl;
                 return CODE_FAILURE;
             }
             break;
@@ -122,20 +121,20 @@ int main(int argc, char* argv[])
             options.set_targets(argv[optind++]);
 
     if (options.is_verbose())
-        cout << "Verbose: Finished parsing command line options." << endl;
+        std::cout << "Verbose: Finished parsing command line options." << std::endl;
 
-    string line, prev;
-    ifstream stream(options.get_makefile());
+    std::string line, prev;
+    std::ifstream stream(options.get_makefile());
     if (options.is_verbose())
-        cout << "Verbose: Opening makefile: '" << options.get_makefile() << "'." << endl;
+        std::cout << "Verbose: Opening makefile: '" << options.get_makefile() << "'." << std::endl;
     if (stream.fail())
     {
-        cerr << exe_name << ": " << options.get_makefile() << ": No such file. Stop." << endl;
+        std::cerr << exe_name << ": " << options.get_makefile() << ": No such file. Stop." << std::endl;
         return CODE_FAILURE;
     }
-    vector<string> makefile;
+    std::vector<std::string> makefile;
     if (options.is_verbose())
-        cout << "Verbose: Merging lines of makefile which end with '\\'." << endl;
+        std::cout << "Verbose: Merging lines of makefile which end with '\\'." << std::endl;
 
     while (getline(stream, line)) // handling lines that ends with a backslash
     {
@@ -161,16 +160,16 @@ int main(int argc, char* argv[])
     }
     if (prev != "")
     {
-        cerr << "Unexpected end of file. Last line of Makefile probably ends with '\\'." << endl;
+        std::cerr << "Unexpected end of file. Last line of Makefile probably ends with '\\'." << std::endl;
         return CODE_FAILURE;
     }
 
     pmake make;
     try
     {
-        make = pmake(makefile, move(options), move(exe_name));
+        make = pmake(makefile, std::move(options), std::move(exe_name));
     }
-    catch (invalid_argument&)
+    catch (std::invalid_argument&)
     {
         return CODE_FAILURE;
     }
