@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <regex>
 #include "makefile_records.hpp"
+#include "thread.hpp"
 
 enum class process_states
 {
@@ -41,6 +42,8 @@ class pmake
         static const std::regex item_def;
     
     private:
+        using thread_type = my_thread<process_states(pmake*, makefile_record&)>;
+
         pmake_options m_options;
         std::string m_exe_name;
         pmake_variables m_variables;
@@ -51,4 +54,5 @@ class pmake
         std::string is_circular(const file& target, const std::vector<file>& deps);
 
         process_states process_target(makefile_record& record);
+        static process_states static_process_target(pmake* mak, makefile_record& record);
 };

@@ -17,14 +17,14 @@ class my_thread<Return(Input...)>
         struct thread_data
         {
             template<typename F>
-            thread_data(F&& _func, Input&&... _input) : func(std::move(_func)), input(std::move(_input)...), m_ready(false) { }
+            thread_data(F&& _func, Input&&... _input) : func(std::forward<F>(_func)), input(std::forward<Input>(_input)...), m_ready(false) { }
 
             template<int... S> Return call_wrapper(seq<S...>){ return func(std::get<S>(std::move(input))...); }
 
             private:
                 std::function<Return(Input...)> func;
             public:
-                std::tuple<typename std::remove_reference<Input>::type...> input;
+                std::tuple<Input...> input;
                 Return ret;
                 bool m_ready;
         };

@@ -72,7 +72,7 @@ std::string pmake::is_circular(const file& target, const std::vector<file>& depe
     {
         try
         {
-            auto deps = m_records.find_record(dep).get_dependencies();
+            auto deps = m_records.find_record(dep)->get_dependencies();
             if (std::find(deps.begin(), deps.end(), target) != deps.end())
                 return "'" + target.get_name() + "' -> '" + dep.get_name() + "'";
             else
@@ -179,9 +179,10 @@ int pmake::run()
 
     for (const file& target : m_options.get_targets())
     {
-        try
+        makefile_records::iterator iter = m_records.find_record(target);
+        if (iter != m_records.end()) // exists
         {
-            switch (/*process_states state = */process_target(m_records.find_record(target)))
+            switch (/*process_states state = */process_target(*iter))
             {
             case process_states::UP_TO_DATE:
                 if (!m_options.is_question())
@@ -195,7 +196,7 @@ int pmake::run()
                 break;
             }
         }
-        catch (std::invalid_argument&)
+        else
         {
             std::cerr << m_exe_name << ": No rule to build target '" << target.get_name() << "'. Stop" << std::endl;
             return CODE_FAILURE;
@@ -212,27 +213,17 @@ process_states pmake::process_target(makefile_record& record)
     bool must_rebuild = record.get_dependencies().empty();
     if (m_options.is_verbose())
         std::cout << "Verbose: Considering target '" << record.get_target().get_name() << "'." << std::endl;
+
+    std::vector<thread_type> threads;
+
     for (const file& dependency : record.get_dependencies())
     {
-        try
+        makefile_records::iterator iter = m_records.find_record(dependency);
+        if (iter != m_records.end()) // exists
         {
-            switch (process_states state = process_target(m_records.find_record(dependency)))
-            {
-            case process_states::MUST_REBUILD:
-                if (m_options.is_verbose())
-                    std::cout << "Verbose: Target '" << record.get_target().get_name() << "' successfuly rebuilt." << std::endl;
-                if (m_options.is_question())
-                    return process_states::QUESTION_FAILURE;
-                must_rebuild = true;
-                break;
-            case process_states::QUESTION_FAILURE:
-            case process_states::BUILD_FAILED:
-                return state; // like throw;
-            default:
-                break;
-            }
+            threads.emplace_back(&pmake::static_process_target, &(*this), *iter);
         }
-        catch (std::invalid_argument&)
+        else
         {
             if (m_options.is_verbose())
                 std::cout << "Verbose: Checking timestamp of dependency '" << dependency.get_name() << "'." << std::endl;
@@ -251,18 +242,40 @@ process_states pmake::process_target(makefile_record& record)
             }
         }
     }
+
+    for (thread_type& thr : threads)
+    {
+        if (thr.join() == process_states::MUST_REBUILD)
+            must_rebuild = true;
+    }
+
     if (must_rebuild)
     {
         if (m_options.is_question())
-            return process_states::QUESTION_FAILURE;
+            std::exit(CODE_QUESTION_FAILURE);
         if (m_options.is_verbose())
             std::cout << "Verbose: Executing commands for '" << record.get_target().get_name() << "'." << std::endl;
         if (int ret = record.execute(m_options.is_just_print()))
         {
             std::cerr << m_exe_name << ": recipe for target '" << record.get_target().get_name() << "' failed. (" << ret << "). Stopping" << std::endl;
-            return process_states::BUILD_FAILED;
+            std::exit(CODE_FAILURE);
         }
     }
 
     return must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;
+}
+
+process_states pmake::static_process_target(pmake* mak, makefile_record& record)
+{
+    process_states state = mak->process_target(record);
+    switch (state)
+    {
+    case process_states::MUST_REBUILD:
+        if (mak->m_options.is_verbose())
+            std::cout << "Verbose: Target '" << record.get_target().get_name() << "' successfuly rebuilt." << std::endl;
+        break;
+    default:
+        break;
+    }
+    return state;
 }
