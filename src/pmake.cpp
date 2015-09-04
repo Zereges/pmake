@@ -203,6 +203,11 @@ int pmake::run()
         }
     }
 
+    for (thread_type& thr : m_threads)
+    {
+        std::cout << thr.join() << std::endl;
+    }
+
     return CODE_SUCCESS;
 }
 
@@ -259,7 +264,7 @@ process_states pmake::process_target(makefile_record& record)
         if (m_options.is_verbose())
             std::cout << "Verbose: Setting thread to execute commands for '" << record.get_target().get_name() << "'." << std::endl;
 
-        my_thread<int(makefile_record*, bool, std::string&&)> thr(&makefile_record::static_execute, &record, m_options.is_just_print(), m_exe_name + ": recipe for target '" + record.get_target().get_name());
+        m_threads.emplace_back(&makefile_record::static_execute, &record, m_options.is_just_print(), m_exe_name + ": recipe for target '" + record.get_target().get_name());
     }
 
     return must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;
