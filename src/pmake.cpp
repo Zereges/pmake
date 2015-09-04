@@ -70,15 +70,15 @@ std::string pmake::is_circular(const file& target, const std::vector<file>& depe
 {
     for (const file& dep : dependencies)
     {
-        try
+        auto iter = m_records.find_record(dep);
+        if (iter != m_records.end())
         {
-            auto deps = m_records.find_record(dep)->get_dependencies();
+            auto deps = iter->get_dependencies();
             if (std::find(deps.begin(), deps.end(), target) != deps.end())
                 return "'" + target.get_name() + "' -> '" + dep.get_name() + "'";
             else
                 return is_circular(target, deps);
         }
-        catch (std::invalid_argument&) { }
     }
     return "";
 }
@@ -221,7 +221,7 @@ process_states pmake::process_target(makefile_record& record)
         makefile_records::iterator iter = m_records.find_record(dependency);
         if (iter != m_records.end()) // exists
         {
-            threads.emplace_back(&pmake::static_process_target, &(*this), *iter);
+            threads.emplace_back(&pmake::static_process_target, this, *iter);
         }
         else
         {
