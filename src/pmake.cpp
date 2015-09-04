@@ -222,7 +222,7 @@ process_states pmake::process_target(makefile_record& record)
         makefile_records::iterator iter = m_records.find_record(dependency);
         if (iter != m_records.end()) // exists
         {
-            threads.emplace_back(&pmake::static_process_target, this, *iter);
+            threads.emplace_back(&pmake::static_process_target, +&*this, *iter);
         }
         else
         {
