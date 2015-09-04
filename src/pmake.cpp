@@ -8,7 +8,6 @@
 #include "makefile_record.hpp"
 #include "pmake_options.hpp"
 #include "file.hpp"
-#include "thread.hpp"
 
 const std::regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *([^ ]+.*))");
 const std::regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
@@ -203,11 +202,6 @@ int pmake::run()
         }
     }
 
-    for (thread_type& thr : m_threads)
-    {
-        std::cout << thr.join() << std::endl;
-    }
-
     return CODE_SUCCESS;
 }
 
@@ -262,9 +256,12 @@ process_states pmake::process_target(makefile_record& record)
         if (m_options.is_question())
             return process_states::QUESTION_FAILURE;
         if (m_options.is_verbose())
-            std::cout << "Verbose: Setting thread to execute commands for '" << record.get_target().get_name() << "'." << std::endl;
-
-        m_threads.emplace_back(&makefile_record::static_execute, &record, m_options.is_just_print(), m_exe_name + ": recipe for target '" + record.get_target().get_name());
+            std::cout << "Verbose: Executing commands for '" << record.get_target().get_name() << "'." << std::endl;
+        if (int ret = record.execute(m_options.is_just_print()))
+        {
+            std::cerr << m_exe_name << ": recipe for target '" << record.get_target().get_name() << "' failed. (" << ret << "). Stopping" << std::endl;
+            return process_states::BUILD_FAILED;
+        }
     }
 
     return must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;

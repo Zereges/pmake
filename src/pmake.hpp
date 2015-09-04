@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <regex>
 #include "makefile_records.hpp"
-#include "thread.hpp"
 
 enum class process_states
 {
@@ -42,14 +41,10 @@ class pmake
         static const std::regex item_def;
     
     private:
-        using thread_type = my_thread<int(makefile_record*, bool, std::string&&)>;
-
         pmake_options m_options;
         std::string m_exe_name;
         pmake_variables m_variables;
         makefile_records m_records;
-        std::vector<thread_type> m_threads;
-
 
         std::string replace_occurences(const std::string& input);
 
