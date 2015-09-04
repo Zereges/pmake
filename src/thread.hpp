@@ -19,7 +19,13 @@ class my_thread<Return(Input...)>
             template<typename F>
             thread_data(F&& _func, Input&&... _input) : func(std::forward<F>(_func)), input(std::forward<Input>(_input)...), m_ready(false) { }
 
-            template<int... S> Return call_wrapper(seq<S...>){ return func(std::get<S>(std::move(input))...); }
+            thread_data(const thread_data&) = delete;
+            thread_data& operator=(const thread_data&) = delete;
+
+            thread_data(thread_data&&) = default;
+            thread_data& operator=(thread_data&&) = default;
+
+            template<int... S> Return call_wrapper(seq<S...>){ return func(std::forward<Input>(std::get<S>(input))...); }
 
             private:
                 std::function<Return(Input...)> func;
@@ -39,6 +45,7 @@ class my_thread<Return(Input...)>
 
         my_thread(const my_thread&) = delete;
         my_thread& operator=(const my_thread&) = delete;
+        
         my_thread(my_thread&&) = default;
         my_thread& operator=(my_thread&&) = default;
 

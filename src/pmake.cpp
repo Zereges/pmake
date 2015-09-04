@@ -1,4 +1,5 @@
 #include <vector>
+#include <list>
 #include <string>
 #include <regex>
 #include <iostream>
@@ -214,7 +215,7 @@ process_states pmake::process_target(makefile_record& record)
     if (m_options.is_verbose())
         std::cout << "Verbose: Considering target '" << record.get_target().get_name() << "'." << std::endl;
 
-    std::vector<thread_type> threads;
+    std::list<thread_type> threads; // std::vector is unstable
 
     for (const file& dependency : record.get_dependencies())
     {
