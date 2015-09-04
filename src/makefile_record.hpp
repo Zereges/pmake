@@ -22,6 +22,7 @@ class makefile_record
         dependencies get_dependencies_recent() const;
 
         int execute(bool only_print = false);
+        static int static_execute(makefile_record* record, bool only_print, std::string&& text);
         bool is_built() const { return m_completed; }
 
         void add_command(std::string&& command) { m_commands.emplace_back(std::move(command)); }

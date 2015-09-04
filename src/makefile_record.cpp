@@ -6,6 +6,7 @@
 #include "makefile_record.hpp"
 #include "pmake_options.hpp"
 #include "file.hpp"
+#include "main.hpp"
 
 makefile_record::makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options) : m_completed(false)
 {
@@ -52,5 +53,15 @@ int makefile_record::execute(bool only_print)
                 return ret;
     }
     m_completed = true;
+    return 0;
+}
+
+int makefile_record::static_execute(makefile_record* record, bool only_print, std::string&& text)
+{
+    if (int ret = record->execute(only_print))
+    {
+        std::cerr << text << "' failed. (" << ret << "). Stopping." << std::endl;
+        std::exit(CODE_FAILURE);
+    }
     return 0;
 }
