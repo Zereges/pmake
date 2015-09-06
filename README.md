@@ -10,7 +10,8 @@ This program can be run on any platform, which has C\+\+11 support, POSIX thread
 *Windows 7*, with [wingetopt](https://github.com/alex85k/wingetopt),
 [Pthreads Win32](https://www.sourceware.org/pthreads-win32/), compiled with either
 [MVS2015](https://www.visualstudio.com/) or [MinGW](http://www.mingw.org/) G++ 4.9.2<br>
-Debian 8.1, compiled with G++ 4.9.2
+Debian 8.1, compiled with G++ 4.9.2<br>
+FreeBSD 10.2-RELEASE, compiled with Clang++ 3.4.1
 
 ## Download
 You can download source code directly as release of this repository, or you can clone the repository
