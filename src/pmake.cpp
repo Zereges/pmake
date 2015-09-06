@@ -17,7 +17,11 @@ const std::regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
 const std::regex pmake::target_def(R"(([^:]+):(.*))");
 const std::regex pmake::command_def(R"(^\s*(.+)\s*$)");
 const std::regex pmake::item_def(R"(^\s*(.+)\s*$)");
-        
+
+//! Splits input string by delimiter.
+//! \param str string to be split.
+//! \param delim delimiter by which str should be split.
+//! \return new std::vector of strings.
 std::vector<std::string> split(const std::string& str, char delim)
 {
     std::vector<std::string> elems;
@@ -33,6 +37,11 @@ std::vector<std::string> split(const std::string& str, char delim)
     return move(elems);
 }
 
+//! Replaces occurences of \p find by \p replace in string \p what.
+//! \param what String to search in.
+//! \param find Substring to look for.
+//! \param replace Substring to be replaced for \p find.
+//! \return reference to \p what.
 std::string& replace(std::string& what, const std::string& find, const std::string& replace)
 {
     size_t pos = 0;
@@ -44,6 +53,12 @@ std::string& replace(std::string& what, const std::string& find, const std::stri
     return what;
 }
 
+//! Replaces occurences of \p find by space separated \p replaces in \p what string.
+//! \sa replace(std::string&, const std::string&, const std::string&)
+//! \param what String to search in.
+//! \param find Substring to look for.
+//! \param replaces std::vector to be serialized and replaced for \p find.
+//! \return reference to \p what.
 std::string& replace(std::string& what, const std::string& find, const makefile_record::dependencies& replaces)
 {
     std::string s;

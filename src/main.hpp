@@ -2,18 +2,21 @@
 #include <iostream>
 #include <algorithm>
 
+//! Program return values. C style enum, so these are just int constants.
 enum ret_values
 {
-    CODE_SUCCESS = 0,
-    CODE_QUESTION_FAILURE = 1,
-    CODE_FAILURE = 2,
+    CODE_SUCCESS = 0, //!< Value, which is returned when make successfuly processes all given targets without failure.
+    CODE_QUESTION_FAILURE = 1, //!< Value, which is returned if -q flag is specified, and there exists at least one target, which has to be rebuilt.
+    CODE_FAILURE = 2, //!< Value, which is returned whenever an error occurs.
 };
 
+//! Prints version and author.
 inline void print_version()
 {
     std::cout << "1.0, Filip Kliber <zereges@gmail.com>" << std::endl;
 }
 
+//! Prints basic help.
 inline void print_help(const std::string& exe_name)
 {
     std::cout << "Usage: " << exe_name << " [options] [target] ..." << std::endl <<
@@ -61,11 +64,15 @@ inline void print_help(const std::string& exe_name)
         make.
 
     --warn-undefined-variables
-        Warn when an undefined variable is referenced.)" << std::endl << std::endl;
-
+        Warn when an undefined variable is referenced.)" << std::endl;
+    std::cout << "For more information see GNU make manual." << std::endl << std::endl;
     print_version();
 }
 
+//! Converts string to a number with check if all chars of the string are 0-9.
+//! This function is only used when converting -j flag, which has to be positive, so 0 is technicaly also error.
+//! \param str string representing a number.
+//! \return number represented by \ref str, zero othrewise.
 inline int to_number(const std::string& str)
 {
     if (std::all_of(str.begin(), str.end(), [](decltype(*str.begin()) c) { return (c >= '0' && c <= '9'); }))
