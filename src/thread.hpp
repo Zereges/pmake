@@ -3,6 +3,8 @@
 #include <functional>
 #include <pthread.h>
 
+extern size_t static_counter;
+
 template<typename F>
 class my_thread;
 
@@ -68,6 +70,7 @@ class my_thread<Return(Input...)>
             thread_data* data = static_cast<thread_data*>(arg);
             data->ret = data->call_wrapper(typename gens<sizeof...(Input)>::type());
             data->m_ready = true;
+            --static_counter;
             return NULL;
         }
 

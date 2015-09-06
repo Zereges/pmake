@@ -9,13 +9,15 @@
 #include "makefile_record.hpp"
 #include "pmake_options.hpp"
 #include "file.hpp"
+#include "thread.hpp"
+#include "thread_manager.hpp"
 
 const std::regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *([^ ]+.*))");
 const std::regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
 const std::regex pmake::target_def(R"(([^:]+):(.*))");
 const std::regex pmake::command_def(R"(^\s*(.+)\s*$)");
 const std::regex pmake::item_def(R"(^\s*(.+)\s*$)");
-
+        
 std::vector<std::string> split(const std::string& str, char delim)
 {
     std::vector<std::string> elems;
@@ -215,14 +217,24 @@ process_states pmake::process_target(makefile_record& record)
     if (m_options.is_verbose())
         std::cout << "Verbose: Considering target '" << record.get_target().get_name() << "'." << std::endl;
 
-    std::list<thread_type> threads; // std::vector is unstable
+    thread_manager threads;
 
     for (const file& dependency : record.get_dependencies())
     {
         makefile_records::iterator iter = m_records.find_record(dependency);
         if (iter != m_records.end()) // exists
         {
-            threads.emplace_back(&pmake::static_process_target, +&*this, *iter);
+            bool in_new_thread = false;
+            m_mutex.lock();
+            if (thread_manager::get_value() < m_options.get_jobs())
+            {
+                in_new_thread = true;
+                threads.emplace_back(&pmake::static_process_target, +&*this, *iter);
+            }
+            m_mutex.unlock();
+            if (!in_new_thread)
+                if (process_target(*iter) == process_states::MUST_REBUILD)
+                    must_rebuild = true;
         }
         else
         {
