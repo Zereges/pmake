@@ -198,3 +198,6 @@ FakesAssemblies/
 # Linux a.out format and obj formats
 *.out
 *.o
+
+# Documentation
+doc/

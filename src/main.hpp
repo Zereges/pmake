@@ -72,7 +72,7 @@ inline void print_help(const std::string& exe_name)
 //! Converts string to a number with check if all chars of the string are 0-9.
 //! This function is only used when converting -j flag, which has to be positive, so 0 is technicaly also error.
 //! \param str string representing a number.
-//! \return number represented by \ref str, zero othrewise.
+//! \return number represented by \p str, zero othrewise.
 inline int to_number(const std::string& str)
 {
     if (std::all_of(str.begin(), str.end(), [](decltype(*str.begin()) c) { return (c >= '0' && c <= '9'); }))

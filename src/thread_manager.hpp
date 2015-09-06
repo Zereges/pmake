@@ -4,8 +4,8 @@
 
 extern size_t static_counter;
 
-/*!
-    Class to manage storing new threads.
+/**!
+    \brief Class to manage storing new threads.
 */
 class thread_manager
 {

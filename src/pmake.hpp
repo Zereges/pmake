@@ -16,8 +16,8 @@ enum class process_states
     BUILD_FAILED, //!< Value, returned if one of executing commands failed.
 };
 
-/*!
-    Base class representing how make processes targets.
+/**!
+    \brief Base class representing how make processes targets.
 */
 class pmake
 {
@@ -45,7 +45,7 @@ class pmake
         //! \return const reference to value of the variable.
         const std::string& get_variable(const std::string& name) const { return m_variables.at(name); }
 
-        //! Constructs new record at the end of \ref m_records.
+        //! Constructs new record at the end of pmake::m_records.
         //! \param targets std::vector of names of targets.
         //! \param dependencies std::vector of names of dependencies.
         //! \param options const reference to \ref pmake_options.

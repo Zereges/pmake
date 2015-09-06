@@ -3,8 +3,8 @@
 #include "makefile_record.hpp"
 #include "file.hpp"
 
-/*!
-    Class for storing all \ref makefile_record in Makefile.
+/**!
+    \brief Class for storing all \ref makefile_record in Makefile.
 */
 class makefile_records
 {
@@ -59,11 +59,11 @@ class makefile_records
         //! \return \ref const_reference to last element in container.
         const_reference back() const { return m_records.back(); }
 
-        //! Inserts an element of value \ref val by copy constructing it at the end.
+        //! Inserts an element of value \p val by copy constructing it at the end.
         //! \param val element to be inserted into container.
         void push_back(const_reference val) { m_records.push_back(val); }
 
-        //! Inserts an element of value \ref val by move constructing it at the end.
+        //! Inserts an element of value \p val by move constructing it at the end.
         //! \param val element to be inserted into container.
         void push_back(value_type&& val) { m_records.push_back(std::move(val)); }
 

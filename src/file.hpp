@@ -1,8 +1,8 @@
 #pragma once
 #include <sys/stat.h>
 
-/*!
-    Class representing basic file having name and timestamp of last modification.
+/**!
+    \brief Class representing basic file having name and timestamp of last modification.
 */
 class file
 {

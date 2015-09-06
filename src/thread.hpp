@@ -5,13 +5,17 @@
 
 extern size_t static_counter;
 
+/**!
+    \brief Wrapper around POSIX threads pthread.
+    \sa my_thread<Return(Input...)>
+*/
 template<typename F>
 class my_thread;
 
-/*!
-    Wrapper around POSIX threads pthread. Does not support functions without return value <void(Input...)>
-    @tparam Return return value of the function.
-    @tparam Input input values of the function.
+/**!
+    \brief Wrapper around POSIX threads pthread. Does not support functions without return value \a <void(Input...)>
+    @tparam Return return type of the function.
+    @tparam Input input types of the function.
 */
 template<typename Return, typename... Input>
 class my_thread<Return(Input...)>

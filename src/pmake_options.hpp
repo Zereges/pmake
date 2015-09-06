@@ -3,8 +3,8 @@
 #include <thread>
 #include "file.hpp"
 
-/*!
-    Class representing options passed on command line.
+/**!
+    \brief Class representing options passed on command line.
     \sa main.hpp#print_help()
 */
 class pmake_options

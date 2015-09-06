@@ -4,8 +4,9 @@
 #include "pmake_options.hpp"
 #include "file.hpp"
 
-/*!
-    Class for storing single records in Makefile. Record in makefile has following syntax:
+/**!
+    \brief Class for storing single records in Makefile.
+    Record in makefile has following syntax:
     target [...] : [dependency] [...]
         [command]
         [...]

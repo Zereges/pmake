@@ -24,3 +24,6 @@ clean:
 
 install:
 	cp pmake /usr/bin/pmake
+    
+documentation:
+	doxygen
