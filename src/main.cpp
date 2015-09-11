@@ -150,7 +150,6 @@ int main(int argc, char* argv[])
                 buffer[size] = '\0';
             file_content += buffer;
         }
-        cout << s << endl;
     }
     else if (errno == EACCES)
     {
