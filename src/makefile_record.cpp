@@ -3,6 +3,10 @@
 #include <iostream>
 #include <algorithm>
 #include <ctime>
+//#ifndef _WIN32
+    #include <unistd.h>
+    #include <sys/wait.h>
+//#endif
 #include "makefile_record.hpp"
 #include "pmake_options.hpp"
 #include "file.hpp"
@@ -47,24 +51,24 @@ int makefile_record::execute(bool only_print)
 {
     for (const std::string& command : m_commands)
     {
+        int ret;
         std::cout << command << std::endl;
         if (!only_print)
         {
 #ifdef _WIN32 // to maintain compatibility
-            if (int ret = system(command.c_str()))
+            if (ret = system(command.c_str()))
                 return ret;
-#elif // to pass school requirements for POSIX API usage
-            switch (int pid = fork())
+#else // to pass school requirements for POSIX API usage
+            switch (/*int pid = */fork())
             {
             case -1: 
-                std::cerr << "Could not fork. Exitting." << std::endl;
+                std::cerr << "Could not fork. Exiting." << std::endl;
                 std::exit(CODE_FAILURE);
                 break;
             case 0: // child
-                execl(command.c_str());
+                execl(command.c_str(), "");
                 break;
             default: // parent
-                int ret;
                 wait(&ret);
                 return ret;
             }
