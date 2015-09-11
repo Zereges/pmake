@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <unordered_map>
 #include <stdexcept>
 #include <cstdio>
@@ -11,6 +12,7 @@
     #define chdir _chdir // win chdir is deprecated
 #else
     #include <unistd.h>
+    #include <fcntl.h>
 #endif
 #include <sys/stat.h>
 #include "main.hpp"
@@ -19,6 +21,7 @@
 
 int main(int argc, char* argv[])
 {
+
     pmake_options options;
     std::string exe_name = argv[0];
     for (;;)
@@ -124,14 +127,43 @@ int main(int argc, char* argv[])
         std::cout << "Verbose: Finished parsing command line options." << std::endl;
 
     std::string line, prev;
-    std::ifstream stream(options.get_makefile());
     if (options.is_verbose())
         std::cout << "Verbose: Opening makefile: '" << options.get_makefile() << "'." << std::endl;
+
+#ifdef _WIN32 // to maintain compatibility
+    std::ifstream stream(options.get_makefile());
     if (stream.fail())
     {
         std::cerr << exe_name << ": " << options.get_makefile() << ": No such file. Stop." << std::endl;
         return CODE_FAILURE;
     }
+#else // to pass school requirements for POSIX API usage
+    int fd;
+    std::string file_content;
+    if ((fd = open(options.get_makefile().c_str(), O_RDONLY)) >= 0)
+    {
+        const int BUFSIZE = 1024;
+        char buffer[BUFSIZE];
+        while (int size = read(fd, buffer, BUFSIZE))
+        {
+            if (size != BUFSIZE)
+                buffer[size] = '\0';
+            file_content += buffer;
+        }
+        cout << s << endl;
+    }
+    else if (errno == EACCES)
+    {
+        std::cerr << exe_name << ": " << options.get_makefile() << ": Permission denied. Stop." << std::endl;
+        return CODE_FAILURE;
+    }
+    else if (errno == ENOENT)
+    {
+        std::cerr << exe_name << ": " << options.get_makefile() << ": No such file. Stop." << std::endl;
+        return CODE_FAILURE;
+    }
+    std::stringstream stream(file_content);
+#endif
     std::vector<std::string> makefile;
     if (options.is_verbose())
         std::cout << "Verbose: Merging lines of makefile which end with '\\'." << std::endl;
