@@ -66,7 +66,7 @@ int makefile_record::execute(bool only_print)
                 std::exit(CODE_FAILURE);
                 break;
             case 0: // child
-                execl(command.c_str(), "");
+                execl("/bin/sh", "sh", "-c", command.c_str(), NULL);
                 break;
             default: // parent
                 wait(&ret);
