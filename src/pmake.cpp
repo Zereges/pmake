@@ -54,6 +54,7 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, 
     m_exe_name(move(exe_name)),
     m_variables // some of built-in variables according to GNU make man page.
     {
+        { "MAKE", "make" },
         { "AR", "ar" },
         { "AS", "as" },
         { "CC", "cc" },
