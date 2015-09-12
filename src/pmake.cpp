@@ -14,7 +14,7 @@
 
 const std::regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *(.*))");
 const std::regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
-const std::regex pmake::target_def(R"(([^:]+):(.*))");
+const std::regex pmake::target_def(R"(([^\s][^:]+):(.*))");
 const std::regex pmake::command_def(R"(^\s*(.+)\s*$)");
 const std::regex pmake::item_def(R"(^\s*(.+)\s*$)");
 
@@ -227,7 +227,7 @@ int pmake::run()
 process_states pmake::process_target(makefile_record& record)
 {
     if (record.is_built())
-        return process_states::UP_TO_DATE;
+        return process_states::MUST_REBUILD;
     bool must_rebuild = record.get_dependencies().empty();
     if (m_options.is_verbose())
         std::cout << "Verbose: Considering target '" << record.get_target().get_name() << "'." << std::endl;

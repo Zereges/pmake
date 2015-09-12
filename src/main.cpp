@@ -143,11 +143,10 @@ int main(int argc, char* argv[])
     if ((fd = open(options.get_makefile().c_str(), O_RDONLY)) >= 0)
     {
         const int BUFSIZE = 1024;
-        char buffer[BUFSIZE];
+        char buffer[BUFSIZE + 1];
         while (int size = read(fd, buffer, BUFSIZE))
         {
-            if (size != BUFSIZE)
-                buffer[size] = '\0';
+            buffer[size] = '\0';
             file_content += buffer;
         }
     }

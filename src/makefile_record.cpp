@@ -49,10 +49,13 @@ makefile_record::dependencies makefile_record::get_dependencies_recent() const
 
 int makefile_record::execute(bool only_print)
 {
-    for (const std::string& command : m_commands)
+    for (std::string& command : m_commands)
     {
         int ret;
-        std::cout << command << std::endl;
+        if (command[0] == '@')
+            command.erase(0, 1); // remove the @
+        else
+            std::cout << command << std::endl;
         if (!only_print)
         {
 #ifdef _WIN32 // to maintain compatibility
@@ -70,7 +73,8 @@ int makefile_record::execute(bool only_print)
                 break;
             default: // parent
                 wait(&ret);
-                return ret;
+                if (ret)
+                    return ret;
             }
 #endif
         }
