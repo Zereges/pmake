@@ -167,28 +167,26 @@ int main(int argc, char* argv[])
     if (options.is_verbose())
         std::cout << "Verbose: Merging lines of makefile which end with '\\'." << std::endl;
 
-    while (getline(stream, line)) // handling lines that ends with a backslash
+    while (getline(stream, line)) // handling lines that ends with '\\'
     {
-        if (prev != "")
+        if (!line.length()) continue;
+
+        if (line[line.length() - 1] == '\\' && (line.length() == 1 || line[line.length() - 2] != '\\'))
         {
             prev += line;
-            if (!line.length() || prev[prev.length() - 1] != '\\' || (line.length() > 1 && prev[prev.length() - 2] == '\\'))
-            {
-                makefile.push_back(move(prev));
-                prev = "";
-                continue;
-            }
-            prev.pop_back();
-        }
-        if (!line.length()) continue;
-        if (line[line.length() - 1] == '\\' && line.length() > 1 && line[line.length() - 2] != '\\')
-        {
-            prev = line;
             prev.pop_back();
             continue;
         }
-        makefile.push_back(move(line));
+        if (prev != "")
+        {
+            prev += line;
+            makefile.push_back(std::move(prev));
+            prev = "";
+        }
+        else
+            makefile.push_back(std::move(line));
     }
+
     if (prev != "")
     {
         std::cerr << "Unexpected end of file. Last line of Makefile probably ends with '\\'." << std::endl;

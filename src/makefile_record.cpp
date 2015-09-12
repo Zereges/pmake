@@ -3,10 +3,10 @@
 #include <iostream>
 #include <algorithm>
 #include <ctime>
-//#ifndef _WIN32
+#ifndef _WIN32
     #include <unistd.h>
     #include <sys/wait.h>
-//#endif
+#endif
 #include "makefile_record.hpp"
 #include "pmake_options.hpp"
 #include "file.hpp"

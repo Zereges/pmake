@@ -12,7 +12,7 @@
 #include "thread.hpp"
 #include "thread_manager.hpp"
 
-const std::regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *([^ ]+.*))");
+const std::regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *(.*))");
 const std::regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
 const std::regex pmake::target_def(R"(([^:]+):(.*))");
 const std::regex pmake::command_def(R"(^\s*(.+)\s*$)");
