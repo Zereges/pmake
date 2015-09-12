@@ -170,6 +170,9 @@ int main(int argc, char* argv[])
     {
         if (!line.length()) continue;
 
+        // un-escape $$ - $
+        replace(line, "$$", "$");
+
         if (line[line.length() - 1] == '\\' && (line.length() == 1 || line[line.length() - 2] != '\\'))
         {
             prev += line;
@@ -203,4 +206,40 @@ int main(int argc, char* argv[])
     }
 
     return make.run();
+}
+
+std::vector<std::string> split(const std::string& str, char delim)
+{
+    std::vector<std::string> elems;
+    std::stringstream ss(str);
+    std::string item;
+    while (getline(ss, item, delim))
+    {
+        std::smatch sm;
+        if (std::regex_match(item, sm, pmake::item_def)) // removing empty strings.
+            elems.push_back(sm[1]);
+    }
+
+    return move(elems);
+}
+
+std::string& replace(std::string& what, const std::string& find, const std::string& replace)
+{
+    size_t pos = 0;
+    while ((pos = what.find(find, pos)) != std::string::npos)
+    {
+        what.replace(pos, find.length(), replace);
+        pos += replace.length();
+    }
+    return what;
+}
+
+std::string& replace(std::string& what, const std::string& find, const makefile_record::dependencies& replaces)
+{
+    std::string s;
+    for (const file& dep : replaces)
+        s += (dep.get_name() + " ");
+    if (s.length())
+        s.pop_back();
+    return replace(what, find, s);
 }

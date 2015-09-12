@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <algorithm>
+#include "makefile_record.hpp"
 
 //! Program return values. C style enum, so these are just int constants.
 enum ret_values
@@ -80,3 +81,24 @@ inline int to_number(const std::string& str)
     else
         return 0;
 }
+
+//! Replaces occurences of \p find by space separated \p replaces in \p what string.
+//! \sa replace(std::string&, const std::string&, const std::string&)
+//! \param what String to search in.
+//! \param find Substring to look for.
+//! \param replaces std::vector to be serialized and replaced for \p find.
+//! \return reference to \p what.
+std::string& replace(std::string& what, const std::string& find, const makefile_record::dependencies& replaces);
+
+//! Replaces occurences of \p find by \p replace in string \p what.
+//! \param what String to search in.
+//! \param find Substring to look for.
+//! \param replace Substring to be replaced for \p find.
+//! \return reference to \p what.
+std::string& replace(std::string& what, const std::string& find, const std::string& replace);
+
+//! Splits input string by delimiter.
+//! \param str string to be split.
+//! \param delim delimiter by which str should be split.
+//! \return new std::vector of strings.
+std::vector<std::string> split(const std::string& str, char delim);
