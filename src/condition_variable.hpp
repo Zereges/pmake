@@ -28,9 +28,9 @@ class condition_variable
         //! Broadcasts a signal on condition variable.
         int signal() { return pthread_cond_signal(&m_cond); }
         
-        int wait() { return pthread_cond_wait(&m_cond, &m_mutex.m_mutex); }
+        int wait() { return pthread_cond_wait(&m_cond, &m_mutex.get().m_mutex); }
 
     private:
-        mutex& m_mutex;
+        std::reference_wrapper<mutex> m_mutex;
         pthread_cond_t m_cond;
 };
