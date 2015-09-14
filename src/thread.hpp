@@ -94,7 +94,7 @@ class my_thread<Return(Input...)>
         }
         
         //! Destructor to cancel thread if neccessary.
-        ~my_thread() { pthread_cancel(m_id); }
+        ~my_thread() { if (m_joinable) pthread_cancel(m_id); }
 
         //! Detaches this thread, leaving return value unobtainable.
         void detach() { pthread_detach(m_id); m_joinable = false; }

@@ -47,8 +47,9 @@ makefile_record::dependencies makefile_record::get_dependencies_recent() const
 
     return std::move(recent);
 }
-
-#pragma warning(disable: 4706) // assignment within conditional expression, must be for whole function.
+#ifdef _WIN32
+  #pragma warning(disable: 4706) // assignment within conditional expression, must be for whole function.
+#endif
 int makefile_record::execute(bool only_print)
 {
     for (std::string& command : m_commands)
@@ -83,4 +84,6 @@ int makefile_record::execute(bool only_print)
     }
     return 0;
 }
-#pragma warning(default: 4706)
+#ifdef _WIN32
+  #pragma warning(default: 4706)
+#endif

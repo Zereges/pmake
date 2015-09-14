@@ -75,6 +75,10 @@ class makefile_record
         //! \param state \ref process_states to set to.
         void set_process_state(process_states state) { m_process_state = state; }
 
+        //! Gets current process state.
+        //! \return current process state.
+        process_states get_process_state() { return m_process_state; }
+
     private:
         targets m_targets; //!< targets of this \ref makefile_record.
         dependencies m_dependencies; //!< dependencies of this \ref makefile_record.
