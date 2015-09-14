@@ -180,6 +180,17 @@ process_states pmake::process_target(makefile_record& record)
 {
     if (record.is_built())
         return process_states::MUST_REBUILD;
+
+    m_mutex.lock();
+    if (record.is_being_processed())
+    {
+        while (!record.is_being_processed())
+            m_condvar.wait();
+        m_mutex.unlock();
+        return process_states::MUST_REBUILD;
+    }
+    m_mutex.unlock();
+
     bool must_rebuild = record.get_dependencies().empty();
     if (m_options.is_verbose())
         std::cout << "Verbose: Considering target '" << record.get_target().get_name() << "'." << std::endl;
@@ -193,9 +204,6 @@ process_states pmake::process_target(makefile_record& record)
         {
             bool in_new_thread = false;
             m_mutex.lock();
-            while (iter->is_being_processed() && !iter->is_built())
-                m_condvar.wait();
-            iter->set_being_processed();
             if (thread_manager::get_value() < m_options.get_jobs())
             {
                 in_new_thread = true;

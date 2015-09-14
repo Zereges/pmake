@@ -12,7 +12,7 @@
 #include "file.hpp"
 #include "main.hpp"
 
-makefile_record::makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options) : m_completed(false)
+makefile_record::makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options) : m_completed(false), m_inprogress(false)
 {
     const std::vector<std::string> files = options.get_files();
     for (std::string& tar : targets)

@@ -21,7 +21,6 @@
 
 int main(int argc, char* argv[])
 {
-
     pmake_options options;
     std::string exe_name = argv[0];
     for (;;)
