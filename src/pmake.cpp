@@ -11,6 +11,7 @@
 #include "file.hpp"
 #include "thread.hpp"
 #include "thread_manager.hpp"
+#include "condition_variable.hpp"
 
 const std::regex pmake::var_def(R"(([a-zA-Z0-9_-]+) *= *(.*))");
 const std::regex pmake::var_use(R"(\$[({]([a-zA-Z0-9_-]+)[)}])");
@@ -91,7 +92,8 @@ pmake::pmake(const std::vector<std::string>& makefile, pmake_options&& options, 
         { "PFLAGS", "" },
         { "RFLAGS", "" },
         { "LINTFLAGS", "" },
-    }
+    },
+    m_condvar(m_mutex)
 {
     if (m_options.is_verbose())
         std::cout << "Verbose: Parsing makefile: '" << m_options.get_makefile() << "'." << std::endl;
@@ -191,6 +193,9 @@ process_states pmake::process_target(makefile_record& record)
         {
             bool in_new_thread = false;
             m_mutex.lock();
+            while (iter->is_being_processed() && !iter->is_built())
+                m_condvar.wait();
+            iter->set_being_processed();
             if (thread_manager::get_value() < m_options.get_jobs())
             {
                 in_new_thread = true;
@@ -239,7 +244,9 @@ process_states pmake::process_target(makefile_record& record)
             std::exit(CODE_FAILURE);
         }
     }
-
+    m_mutex.lock();
+    m_condvar.signal();
+    m_mutex.unlock();
     return must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;
 }
 

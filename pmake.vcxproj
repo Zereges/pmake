@@ -25,6 +25,7 @@
     <ClCompile Include="src\thread_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\condition_variable.hpp" />
     <ClInclude Include="src\file.hpp" />
     <ClInclude Include="src\main.hpp" />
     <ClInclude Include="src\makefile_record.hpp" />

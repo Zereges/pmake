@@ -62,7 +62,7 @@ int makefile_record::execute(bool only_print)
             if (ret = system(command.c_str()))
                 return ret;
 #else // to pass school requirements for POSIX API usage
-            switch (/*int pid = */fork())
+            switch (int pid = fork())
             {
             case -1: 
                 std::cerr << "Could not fork. Exiting." << std::endl;
@@ -72,7 +72,7 @@ int makefile_record::execute(bool only_print)
                 execl("/bin/sh", "sh", "-c", command.c_str(), NULL);
                 break;
             default: // parent
-                wait(&ret);
+                waitpid(pid, &ret, 0);
                 if (ret)
                     return ret;
             }
@@ -80,5 +80,6 @@ int makefile_record::execute(bool only_print)
         }
     }
     m_completed = true;
+    m_inprogress = false;
     return 0;
 }

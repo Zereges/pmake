@@ -63,9 +63,13 @@ class makefile_record
         //! \param command command to be added.
         void add_command(std::string&& command) { m_commands.emplace_back(std::move(command)); }
 
+        void set_being_processed() { m_inprogress = true; }
+        bool is_being_processed() { return m_inprogress; }
+
     private:
         targets m_targets; //!< targets of this \ref makefile_record.
         dependencies m_dependencies; //!< dependencies of this \ref makefile_record.
         std::vector<std::string> m_commands; //!< commands of this \ref makefile_record.
         bool m_completed; //!< Represents whether this \ref makefile_record has already been processed.
+        bool m_inprogress; //!< Represents, whether this \ref makefile_record is currently in progress.
 };

@@ -5,7 +5,7 @@ WITH-DEBUG=-g
 pmake: pmake.o main.o makefile_record.o thread_manager.o
 	$(CXX) $(LDFLAGS) $+
 
-pmake.o: src/pmake.cpp src/pmake.hpp src/makefile_record.hpp src/file.hpp src/pmake_options.hpp src/main.hpp src/thread.hpp src/mutex.hpp
+pmake.o: src/pmake.cpp src/pmake.hpp src/makefile_record.hpp src/file.hpp src/pmake_options.hpp src/main.hpp src/thread.hpp src/mutex.hpp src/condition_variable.hpp
 	$(CXX) $(CXXFLAGS) $(WITH-DEBUG) $<
 
 main.o: src/main.cpp src/main.hpp src/pmake.hpp src/pmake_options.hpp

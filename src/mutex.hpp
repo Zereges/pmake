@@ -10,8 +10,17 @@ class mutex
         //! Basic constructor for \ref mutex.
         mutex() : m_mutex(PTHREAD_MUTEX_INITIALIZER) { }
 
+        //! Defaulted move constructor.
+        mutex(mutex&&) = default;
+
+        //! Defaulted move assignment.
+        mutex& operator=(mutex&&) = default;
+
         //! Deleted copy constructor.
         mutex(const mutex&) = delete;
+
+        //! Deleted copy assignment.
+        mutex& operator=(const mutex&) = delete;
 
         //! Destructor for \ref mutex, which frees inner structures.
         ~mutex() { pthread_mutex_destroy(&m_mutex); }
@@ -30,4 +39,6 @@ class mutex
 
     private:
         pthread_mutex_t m_mutex; //!< pthread_mutex structure.
+
+        friend class condition_variable;
 };

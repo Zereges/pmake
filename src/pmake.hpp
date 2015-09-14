@@ -5,6 +5,7 @@
 #include <regex>
 #include "makefile_records.hpp"
 #include "mutex.hpp"
+#include "condition_variable.hpp"
 #include "thread.hpp"
 
 //! C++ like enum class. Return values of target processing.
@@ -25,8 +26,21 @@ class pmake
         using thread_type = my_thread<process_states(pmake*, makefile_record&)>;
         using pmake_variables = std::unordered_map<std::string, std::string>;
 
-        //! Defaulted empty constructor.
-        pmake() = default;
+        //! Default empty constructor.
+        pmake() : m_condvar(m_mutex) { }
+
+        //! Defaulted move constructor.
+        pmake(pmake&&) = default;
+
+        //! Defaulted move assignment.
+        pmake& operator=(pmake&&) = default;
+
+        //! Deleted copy constructor.
+        pmake(const pmake&) = delete;
+
+        //! Deleted copy assignment.
+        pmake& operator=(const pmake&) = delete;
+
         //! Constructor, allowing partialy parsed makefile, command line options, and exe_name to be passed.
         pmake(const std::vector<std::string>& makefile, pmake_options&& options, std::string&& exe_name);
 
@@ -74,6 +88,7 @@ class pmake
         makefile_records m_records; //!< Records in Makefile
         
         mutex m_mutex; //!< Mutex to synchronize multiple threads.
+        condition_variable m_condvar; //< Condition variable to synchronize multiple threads.
 
         //! Replaces all variable uses in input.
         //! \param input line, where to search for variable uses.
