@@ -178,17 +178,22 @@ int pmake::run()
 
 process_states pmake::process_target(makefile_record& record)
 {
-    if (record.is_built())
-        return process_states::MUST_REBUILD;
-
     m_mutex.lock();
-    if (record.is_being_processed())
+    if (record.is_built())
     {
-        while (!record.is_being_processed())
-            m_condvar.wait();
         m_mutex.unlock();
         return process_states::MUST_REBUILD;
     }
+    if (record.is_being_processed())
+    {
+        thread_manager::decrement();
+        while (!record.is_being_processed())
+            m_condvar.wait();
+        m_mutex.unlock();
+        thread_manager::increment();
+        return process_states::MUST_REBUILD;
+    }
+    record.set_being_processed();
     m_mutex.unlock();
 
     bool must_rebuild = record.get_dependencies().empty();
@@ -252,10 +257,12 @@ process_states pmake::process_target(makefile_record& record)
             std::exit(CODE_FAILURE);
         }
     }
+    process_states ret_value = must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;
     m_mutex.lock();
+    record.set_process_state(ret_value);
     m_condvar.signal();
     m_mutex.unlock();
-    return must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;
+    return ret_value;
 }
 
 process_states pmake::static_process_target(pmake* mak, makefile_record& record)

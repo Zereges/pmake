@@ -12,7 +12,8 @@
 #include "file.hpp"
 #include "main.hpp"
 
-makefile_record::makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options) : m_completed(false), m_inprogress(false)
+makefile_record::makefile_record(std::vector<std::string>&& targets, std::vector<std::string>&& dependencies, const pmake_options& options) :
+    m_process_state(process_states::NOT_YET_PROCESSED)
 {
     const std::vector<std::string> files = options.get_files();
     for (std::string& tar : targets)
@@ -47,6 +48,7 @@ makefile_record::dependencies makefile_record::get_dependencies_recent() const
     return std::move(recent);
 }
 
+#pragma warning(disable: 4706) // assignment within conditional expression, must be for whole function.
 int makefile_record::execute(bool only_print)
 {
     for (std::string& command : m_commands)
@@ -79,7 +81,6 @@ int makefile_record::execute(bool only_print)
 #endif
         }
     }
-    m_completed = true;
-    m_inprogress = false;
     return 0;
 }
+#pragma warning(default: 4706)

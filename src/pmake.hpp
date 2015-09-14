@@ -7,15 +7,7 @@
 #include "mutex.hpp"
 #include "condition_variable.hpp"
 #include "thread.hpp"
-
-//! C++ like enum class. Return values of target processing.
-enum class process_states
-{
-    MUST_REBUILD, //!< Value, returned whenever processed target was rebuilt.
-    UP_TO_DATE, //!< Value, returned if processed target was up to date.
-    QUESTION_FAILURE, //!< Value, returned if target has to be rebuild, but -q flag is specified.
-    BUILD_FAILED, //!< Value, returned if one of executing commands failed.
-};
+#include "main.hpp"
 
 /**!
     \brief Base class representing how make processes targets.

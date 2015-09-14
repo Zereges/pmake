@@ -20,7 +20,7 @@ class thread_manager
         void emplace_back(Ts&&... ts)
         {
             m_threads.emplace_back(std::forward<Ts>(ts)...);
-            ++static_counter;
+            increment();
         }
 
         //! Returns the iterator to begin of the container.
@@ -42,4 +42,10 @@ class thread_manager
         //! Gets total threads in the program. Does not count threads which are waiting to be joined.
         //! \return total threads currently running in program.
         static size_t get_value() { return static_counter; }
+
+        //! Manually increments thread counter.
+        static void increment() { ++static_counter; }
+
+        //! Manually decrements thread counter.
+        static void decrement() { --static_counter; }
 };

@@ -3,6 +3,7 @@
 #include <string>
 #include "pmake_options.hpp"
 #include "file.hpp"
+#include "main.hpp"
 
 /**!
     \brief Class for storing single records in Makefile.
@@ -57,19 +58,26 @@ class makefile_record
 
         //! Checks whether commands for this \ref makefile_record has already been executed.
         //! \return true if it was, false otherwise.
-        bool is_built() const { return m_completed; }
+        bool is_built() const { return m_process_state != process_states::NOT_YET_PROCESSED && m_process_state != process_states::PROCESSING; }
 
         //! Appends new command for this \ref makefile_record.
         //! \param command command to be added.
         void add_command(std::string&& command) { m_commands.emplace_back(std::move(command)); }
 
-        void set_being_processed() { m_inprogress = true; }
-        bool is_being_processed() { return m_inprogress; }
+        //! Sets inner process state to being processed.
+        void set_being_processed() { m_process_state = process_states::PROCESSING; }
+
+        //! Checks, whether this record is currently being processed.
+        //! \return true if it is, false otherwise.
+        bool is_being_processed() { return m_process_state == process_states::PROCESSING; }
+
+        //! Manually sets current process state.
+        //! \param state \ref process_states to set to.
+        void set_process_state(process_states state) { m_process_state = state; }
 
     private:
         targets m_targets; //!< targets of this \ref makefile_record.
         dependencies m_dependencies; //!< dependencies of this \ref makefile_record.
         std::vector<std::string> m_commands; //!< commands of this \ref makefile_record.
-        bool m_completed; //!< Represents whether this \ref makefile_record has already been processed.
-        bool m_inprogress; //!< Represents, whether this \ref makefile_record is currently in progress.
+        process_states m_process_state; //!< Represent state in which this record is.
 };

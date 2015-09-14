@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
 #include <algorithm>
-#include "makefile_record.hpp"
+#include <vector>
+#include "file.hpp"
 
 //! Program return values. C style enum, so these are just int constants.
 enum ret_values
@@ -9,6 +10,17 @@ enum ret_values
     CODE_SUCCESS = 0, //!< Value, which is returned when make successfuly processes all given targets without failure.
     CODE_QUESTION_FAILURE = 1, //!< Value, which is returned if -q flag is specified, and there exists at least one target, which has to be rebuilt.
     CODE_FAILURE = 2, //!< Value, which is returned whenever an error occurs.
+};
+
+//! C++ like enum class. Return values of target processing.
+enum class process_states
+{
+    MUST_REBUILD, //!< Value, returned whenever processed target was rebuilt.
+    UP_TO_DATE, //!< Value, returned if processed target was up to date.
+    QUESTION_FAILURE, //!< Value, returned if target has to be rebuild, but -q flag is specified.
+    BUILD_FAILED, //!< Value, returned if one of executing commands failed.
+    NOT_YET_PROCESSED, //< Value, returned if target is not yet processed.
+    PROCESSING, //< Value, returned if target is currently in process.
 };
 
 //! Prints version and author.
@@ -88,7 +100,7 @@ inline int to_number(const std::string& str)
 //! \param find Substring to look for.
 //! \param replaces std::vector to be serialized and replaced for \p find.
 //! \return reference to \p what.
-std::string& replace(std::string& what, const std::string& find, const makefile_record::dependencies& replaces);
+std::string& replace(std::string& what, const std::string& find, const std::vector<file>& replaces);
 
 //! Replaces occurences of \p find by \p replace in string \p what.
 //! \param what String to search in.
