@@ -179,17 +179,6 @@ int pmake::run()
 process_states pmake::process_target(makefile_record& record)
 {
     m_mutex.lock();
-    std::cout << "Checking if '" << record.get_target().get_name() << "'it is built, state = ";
-    switch (record.get_process_state())
-    {
-        case process_states::MUST_REBUILD: std::cout << "MUST_REBUILD"; break;
-        case process_states::UP_TO_DATE: std::cout << "UP_TO_DATE"; break;
-        case process_states::QUESTION_FAILURE: std::cout << "QUESTION_FAILURE"; break;
-        case process_states::BUILD_FAILED: std::cout << "BUILD_FAILED"; break;
-        case process_states::NOT_YET_PROCESSED: std::cout << "NOT_YET_PROCESSED"; break;
-        case process_states::PROCESSING: std::cout << "PROCESSING"; break;
-    }
-    std::cout << std::endl;
     if (record.is_built())
     {
         m_mutex.unlock();
@@ -198,10 +187,11 @@ process_states pmake::process_target(makefile_record& record)
     if (record.is_being_processed())
     {
         thread_manager::decrement();
-        while (!record.is_being_processed())
+        while (record.is_being_processed())
             m_condvar.wait();
-        m_mutex.unlock();
+
         thread_manager::increment();
+        m_mutex.unlock();
         return record.get_process_state(); 
     }
     record.set_being_processed();
@@ -269,9 +259,10 @@ process_states pmake::process_target(makefile_record& record)
         }
     }
     process_states ret_value = must_rebuild ? process_states::MUST_REBUILD : process_states::UP_TO_DATE;
+
     m_mutex.lock();
     record.set_process_state(ret_value);
-    m_condvar.signal();
+    m_condvar.broadcast();
     m_mutex.unlock();
     return ret_value;
 }

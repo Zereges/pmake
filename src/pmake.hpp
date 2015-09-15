@@ -25,7 +25,19 @@ class pmake
         pmake(pmake&&) = default;
 
         //! Defaulted move assignment.
-        pmake& operator=(pmake&&) = default;
+        pmake& operator=(pmake&& other)
+        {
+            if (this != &other)
+            {
+                m_options = std::move(other.m_options);
+                m_exe_name = std::move(other.m_exe_name);
+                m_variables = std::move(other.m_variables);
+                m_records = std::move(other.m_records);
+                m_mutex = std::move(other.m_mutex);
+                m_condvar = condition_variable(m_mutex);
+            }
+            return *this;
+        }
 
         //! Deleted copy constructor.
         pmake(const pmake&) = delete;
